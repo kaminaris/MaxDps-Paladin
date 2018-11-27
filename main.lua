@@ -282,7 +282,9 @@ function Paladin:RetributionGenerators()
 	end
 
 	-- blade_of_justice,if=holy_power<=2|(holy_power=3&(cooldown.hammer_of_wrath.remains>gcd*2|variable.HoW));
-	if cooldown[RT.BladeOfJustice].ready and (holyPower <= 2 or (holyPower == 3 and (cooldown[RT.HammerOfWrath].remains > gcd * 2 or hoW))) then
+	if talents[RT.BladeOfJustice] and cooldown[RT.BladeOfJustice].ready and
+		(holyPower <= 2 or (holyPower == 3 and (cooldown[RT.HammerOfWrath].remains > gcd * 2 or hoW)))
+	then
 		return RT.BladeOfJustice;
 	end
 
@@ -294,7 +296,8 @@ function Paladin:RetributionGenerators()
 	end
 
 	-- hammer_of_wrath,if=holy_power<=4;
-	if talents[RT.HammerOfWrath] and cooldown[RT.HammerOfWrath].ready and (holyPower <= 4) then
+	if talents[RT.HammerOfWrath] and cooldown[RT.HammerOfWrath].ready and holyPower <= 4 and
+		(targetHp < 20 or buff[RT.AvengingWrath].up) then
 		return RT.HammerOfWrath;
 	end
 
