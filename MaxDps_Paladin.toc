@@ -7,4 +7,7 @@
 ## X-Curse-Project-ID: 98895
 ## X-WoWI-ID: 24646
 
-main.lua
+Main.lua
+Specialization\Holy.lua
+Specialization\Protection.lua
+Specialization\Retribution.lua

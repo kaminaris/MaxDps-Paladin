@@ -22,9 +22,11 @@ local RT = {
 	WakeOfAshes       = 255937,
 	BladeOfJustice    = 184575,
 	Judgment          = 20271,
+	JudgmentAura      = 197277,
 	Consecration      = 205228,
 	CrusaderStrike    = 35395,
 	DivineRight       = 277678,
+	EmpyreanPower     = 286393,
 };
 
 local A = {
@@ -74,16 +76,15 @@ end
 function Paladin:RetributionFinishers()
 	local fd = MaxDps.FrameData;
 	local cooldown = fd.cooldown;
-	local azerite = fd.azerite;
 	local buff = fd.buff;
+	local debuff = fd.debuff;
 	local talents = fd.talents;
 	local targets = fd.targets;
 	local gcd = fd.gcd;
 	local holyPower = fd.holyPower;
-	local targetHp = MaxDps:TargetPercentHealth() * 100;
 
-	-- variable,name=ds_castable,value=spell_targets.divine_storm>=2|azerite.divine_right.enabled&target.health.pct<=20&buff.divine_right.down;
-	local dsCastable = targets >= 2 or azerite[A.DivineRight] > 0 and targetHp <= 20 and not buff[RT.DivineRight].up;
+	-- variable,name=ds_castable,value=spell_targets.divine_storm>=2&!talent.righteous_verdict.enabled|spell_targets.divine_storm>=3&talent.righteous_verdict.enabled;
+	local dsCastable = targets >= 2 and not talents[RT.RighteousVerdict] or targets >= 3 and talents[RT.RighteousVerdict];
 
 	-- inquisition,if=buff.inquisition.down|buff.inquisition.remains<5&holy_power>=3|talent.execution_sentence.enabled&cooldown.execution_sentence.remains<10&buff.inquisition.remains<15|cooldown.avenging_wrath.remains<15&buff.inquisition.remains<20&holy_power>=3;
 	if talents[RT.Inquisition] and holyPower >= 1 and (
@@ -108,8 +109,11 @@ function Paladin:RetributionFinishers()
 		return RT.DivineStorm;
 	end
 
-	-- divine_storm,if=variable.ds_castable&(!talent.crusade.enabled|cooldown.crusade.remains>gcd*2);
-	if holyPower >= 3 and (dsCastable and (not talents[RT.Crusade] or cooldown[RT.Crusade].remains > gcd * 2)) then
+	-- divine_storm,if=variable.ds_castable&(!talent.crusade.enabled|cooldown.crusade.remains>gcd*2)|buff.empyrean_power.up&debuff.judgment.down&buff.divine_purpose.down;
+	if holyPower >= 3 and (
+		dsCastable and (not talents[RT.Crusade] or cooldown[RT.Crusade].remains > gcd * 2) or
+		buff[RT.EmpyreanPower].up and not debuff[RT.Judgment].up and not buff[RT.DivinePurpose].up
+	) then
 		return RT.DivineStorm;
 	end
 
@@ -129,7 +133,6 @@ function Paladin:RetributionGenerators()
 	local cooldown = fd.cooldown;
 	local buff = fd.buff;
 	local talents = fd.talents;
-	local targets = fd.targets;
 	local gcd = fd.gcd;
 	local holyPower = fd.holyPower;
 	local targetHp = MaxDps:TargetPercentHealth() * 100;
