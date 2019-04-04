@@ -26,6 +26,7 @@ local RT = {
 	Consecration      = 205228,
 	CrusaderStrike    = 35395,
 	DivineRight       = 277678,
+	RighteousVerdict  = 267610,
 	EmpyreanPower     = 286393,
 };
 
