@@ -57,6 +57,7 @@ function Paladin:RetributionCooldowns()
 	local talents = fd.talents;
 	local holyPower = fd.holyPower;
 
+	MaxDps:GlowEssences();
 	MaxDps:GlowCooldown(RT.ShieldOfVengeance, cooldown[RT.ShieldOfVengeance].ready);
 
 	if talents[RT.Crusade] then

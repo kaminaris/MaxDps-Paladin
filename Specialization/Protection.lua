@@ -80,6 +80,8 @@ function Paladin:ProtectionCooldowns()
 	local buff = fd.buff;
 	local talents = fd.talents;
 
+	MaxDps:GlowEssences();
+
 	-- avenging_wrath;
 	MaxDps:GlowCooldown(PR.AvengingWrath, cooldown[PR.AvengingWrath].ready);
 	MaxDps:GlowCooldown(PR.ShieldOfTheRighteous, cooldown[PR.ShieldOfTheRighteous].ready and not buff[PR.ShieldOfTheRighteousAura].up);
