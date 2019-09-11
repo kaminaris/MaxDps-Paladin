@@ -153,7 +153,7 @@ function Paladin:RetributionGenerators()
 	end
 
 	-- wake_of_ashes,if=(!raid_event.adds.exists|raid_event.adds.in>15|spell_targets.wake_of_ashes>=2)&(holy_power<=0|holy_power=1&cooldown.blade_of_justice.remains>gcd);
-	if cooldown[RT.WakeOfAshes].ready and (
+	if talents[RT.WakeOfAshes] and cooldown[RT.WakeOfAshes].ready and (
 		holyPower <= 0 or holyPower == 1 and
 			cooldown[RT.BladeOfJustice].remains > gcd
 	) then
