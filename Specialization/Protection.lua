@@ -7,35 +7,36 @@ end
 
 local Paladin = addonTable.Paladin;
 local MaxDps = MaxDps;
-local GetTotemInfo = GetTotemInfo;
 
+local HolyPower = Enum.PowerType.HolyPower;
 local PR = {
-	AvengingWrath            = 31884,
-	Seraphim                 = 152262,
-	ShieldOfTheRighteous     = 53600,
-	ShieldOfTheRighteousAura = 132403,
-	Consecration             = 26573,
-	Judgment                 = 275779,
-	CrusadersJudgment        = 204023,
-	AvengersShield           = 31935,
-	AvengersValor            = 197561,
-	BlessedHammer            = 204019,
-	BastionOfLight           = 204035,
-	HammerOfTheRighteous     = 53595,
-	HammerOfWrath            = 24275,
-	WordOfGlory              = 85673,
-	--Kyrian
-	DivineToll = 304971,
-	--Venthyr
+	ArcaneTorrent = 28730,
 	AshenHallow = 316958,
+	AvengersShield = 31935,
+	AvengingWrath = 31884,
+	AvengingWrathTalent = 384376,
+	AvengingWrathMightTalent = 384442,
+	BastionOfLight = 378974,
+	BlessedHammer = 204019,
+	Consecration = 26573,
+	ConsecrationBuff = 188370,
+	DivinePurpose = 223819,
+	DivineToll = 375576,
+	HammerOfTheRighteous = 53595,
+	HammerOfWrath = 24275,
+	Judgment = 275779,
+	KyrianDivineToll = 304971,
+	Seraphim = 152262,
+	ShieldOfTheRighteous = 53600,
+	ShieldOfTheRighteousBuff = 132403,
+	ShiningLight = 327510,
+	WordOfGlory = 85673,
+
 	--NightFae
-	BlessingoftheSeasons = 328278,
 	BlessingofSpring = 328282,
 	BlessingofSummer = 328620,
 	BlessingofAutumn = 328622,
-	BlessingofWinter = 328281,
-	--Necrolord
-	VanquishersHammer = 328204,
+	BlessingofWinter = 328281
 };
 local CN = {
 	None      = 0,
@@ -48,50 +49,46 @@ local CN = {
 setmetatable(PR, Paladin.spellMeta);
 
 function Paladin:Protection()
+	MaxDps:GlowEssences();
+	Paladin:ProtectionCooldowns();
+
 	local fd = MaxDps.FrameData;
-    local covenantId = fd.covenant.covenantId;
+	fd.targets = MaxDps:SmartAoe();
+	local targets = fd.targets;
+
+	if targets < 3 then
+		return Paladin:ProtectionSingleTarget()
+	else
+		return Paladin:ProtectionMultiTarget()
+	end
+end
+
+function Paladin:ProtectionSingleTarget()
+	local fd = MaxDps.FrameData;
 	local cooldown = fd.cooldown;
 	local buff = fd.buff;
 	local talents = fd.talents;
-	local gcd = fd.gcd;
 	local targetHp = MaxDps:TargetPercentHealth() * 100;
-	local consecrationUp = GetTotemInfo(1);
-	local holyPower = UnitPower('player', 9);
+	local holyPower = UnitPower('player', HolyPower);
 
-	Paladin:ProtectionCooldowns();
-
-	if cooldown[PR.Consecration].ready and (not consecrationUp) then
-		return PR.Consecration;
-	end
-
-    --kyrian
-	if covenantId == CN.Kyrian and cooldown[PR.DivineToll].ready then
+	if talents[PR.DivineToll] and cooldown[PR.DivineToll].ready then
 		return PR.DivineToll;
 	end
 
-    --necro
-	if covenantId == CN.Necrolord and cooldown[PR.VanquishersHammer].ready then
-		return PR.VanquishersHammer;
+	if cooldown[PR.Consecration].ready and not buff[PR.ConsecrationBuff].up then
+		return PR.Consecration;
 	end
 
 	if cooldown[PR.Judgment].ready then
 		return PR.Judgment;
 	end
 
-	if cooldown[PR.HammerOfWrath].ready and buff[PR.AvengingWrath].up then
+	if targetHp <= 20 and cooldown[PR.HammerOfWrath].ready and holyPower <= 4 then
 		return PR.HammerOfWrath;
 	end
 
-	if cooldown[PR.HammerOfWrath].ready and targetHp <= 20 then
-		return PR.HammerOfWrath;
-	end
-
-	if holyPower >= 3 and not buff[PR.ShieldOfTheRighteousAura].up then
-		return PR.ShieldOfTheRighteous;
-	end
-
-	if holyPower == 5 then
-		return PR.ShieldOfTheRighteous;
+	if cooldown[PR.HammerOfWrath].ready and holyPower <= 4 then
+		if targetHp <= 20 or buff[PR.AvengingWrath].up then return PR.HammerOfWrath end;
 	end
 
 	if cooldown[PR.AvengersShield].ready then
@@ -102,8 +99,58 @@ function Paladin:Protection()
 		return PR.BlessedHammer;
 	end
 
-	if cooldown[PR.HammerOfTheRighteous].ready then
+	if talents[PR.HammerOfTheRighteous] and cooldown[PR.HammerOfTheRighteous].ready then
 		return PR.HammerOfTheRighteous;
+	end
+
+	if cooldown[PR.Consecration].ready then
+		return PR.Consecration;
+	end
+end
+
+function Paladin:ProtectionMultiTarget()
+	local fd = MaxDps.FrameData;
+	local covenantId = fd.covenant.covenantId;
+	local cooldown = fd.cooldown;
+	local buff = fd.buff;
+	local talents = fd.talents;
+	local targetHp = MaxDps:TargetPercentHealth() * 100;
+	local holyPower = UnitPower('player', HolyPower);
+
+	if talents[PR.DivineToll] and cooldown[PR.DivineToll].ready then
+		return PR.DivineToll;
+	end
+
+	if cooldown[PR.Consecration].ready and not buff[PR.ConsecrationBuff].up then
+		return PR.Consecration;
+	end
+
+	if cooldown[PR.AvengersShield].ready then
+		return PR.AvengersShield;
+	end
+
+	if cooldown[PR.Judgment].ready then
+		return PR.Judgment;
+	end
+
+	if targetHp <= 20 and cooldown[PR.HammerOfWrath].ready and holyPower <= 4 then
+		return PR.HammerOfWrath;
+	end
+
+	if cooldown[PR.HammerOfWrath].ready and holyPower <= 4 then
+		if targetHp <= 20 or buff[PR.AvengingWrath].up then return PR.HammerOfWrath end;
+	end
+
+	if talents[PR.BlessedHammer] and cooldown[PR.BlessedHammer].ready then
+		return PR.BlessedHammer;
+	end
+
+	if talents[PR.HammerOfTheRighteous] and cooldown[PR.HammerOfTheRighteous].ready then
+		return PR.HammerOfTheRighteous;
+	end
+
+	if cooldown[PR.ArcaneTorrent].ready then
+		return PR.ArcaneTorrent;
 	end
 
 	if cooldown[PR.Consecration].ready then
@@ -117,28 +164,26 @@ function Paladin:ProtectionCooldowns()
 	local cooldown = fd.cooldown;
 	local buff = fd.buff;
 	local talents = fd.talents;
-	local health = UnitHealth('player');
-	local healthMax = UnitHealthMax('player');
-	local healthPercent = (health / healthMax) * 100;
-	local holyPower = UnitPower('player', 9);
-	MaxDps:GlowEssences();
+	local playerHealthPct = MaxDps:TargetPercentHealth('player') * 100;
 
-	if not buff[PR.ShieldOfTheRighteousAura].up and holyPower >= 3 then
-		MaxDps:GlowCooldown(PR.ShieldOfTheRighteous);
+	if covenantId == CN.Kyrian then
+		MaxDps:GlowCooldown(PR.KyrianDivineToll, cooldown[PR.KyrianDivineToll].ready);
 	end
 
-	if healthPercent <= 70 and holyPower > 2 then
-		MaxDps:GlowCooldown(PR.WordOfGlory);
-	end
+	MaxDps:GlowCooldown(PR.ShieldOfTheRighteous, (not buff[PR.ShieldOfTheRighteousBuff].up or buff[PR.ShieldOfTheRighteousBuff].remains <= 9.5) or (buff[PR.DivinePurpose].up or buff[PR.BastionOfLight].up));
 
-	MaxDps:GlowCooldown(PR.AvengingWrath, cooldown[PR.AvengingWrath].ready);
+	MaxDps:GlowCooldown(PR.WordOfGlory, playerHealthPct <= 60 and buff[PR.ShiningLight].up);
+
+	if talents[PR.AvengingWrathMightTalent] or talents[PR.AvengingWrathTalent] then
+		MaxDps:GlowCooldown(PR.AvengingWrath, cooldown[PR.AvengingWrath].ready);
+	end
 
 	if talents[PR.Seraphim] then
 		MaxDps:GlowCooldown(PR.Seraphim, cooldown[PR.Seraphim].ready);
 	end
 
 	if talents[PR.BastionOfLight] then
-		MaxDps:GlowCooldown(PR.BastionOfLight, cooldown[PR.BastionOfLight].ready and (cooldown[PR.ShieldOfTheRighteous].charges <= 0.5));
+		MaxDps:GlowCooldown(PR.BastionOfLight, cooldown[PR.BastionOfLight].ready);
 	end
 
 	--Venthyr
@@ -162,5 +207,5 @@ function Paladin:ProtectionCooldowns()
 	if covenantId == CN.NightFae and cooldown[PR.BlessingofWinter].ready then
 		MaxDps:GlowCooldown(PR.BlessingofWinter, cooldown[PR.BlessingofWinter].ready);
 	end
-	
+
 end
