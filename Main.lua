@@ -3,7 +3,7 @@ _G[addonName] = addonTable;
 
 if not MaxDps then return end
 
---- @type MaxDps
+--- @type  MaxDps
 local MaxDps = MaxDps;
 local Paladin = MaxDps:NewModule('Paladin');
 addonTable.Paladin = Paladin;
