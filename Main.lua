@@ -14,6 +14,7 @@ Paladin.spellMeta = {
 	end
 }
 
+-- additional comment
 function Paladin:Enable()
 	if MaxDps.Spec == 1 then
 		MaxDps.NextSpell = Paladin.Holy;
