@@ -12,11 +12,14 @@ local RT = {
 	AvengingWrathTalent = 384376,
 	AvengingWrathMightTalent = 384442,
 	BladeOfJustice = 184575,
+	ConsecratedBlade = 404834,
 	Consecration = 26573,
 	ConsecrationBuff = 188370,
 	Crusade = 231895,
 	CrusadeTalent = 384392,
 	CrusaderStrike = 35395,
+	CrusadingStrikes = 404542,
+	DivineHammer = 198034,
 	DivinePurpose = 223819,
 	DivineStorm = 53385,
 	DivineToll = 375576,
@@ -37,6 +40,9 @@ local RT = {
 	SelflessHealer = 114250,
 	SelflessHealerTalent = 85804,
 	Seraphim = 152262,
+	TemplarSlash = 406647,
+	TemplarStrike = 407480,
+	TemplarStrikes = 406646,
 	TemplarsVerdict = 85256,
 	WakeOfAshes = 255937
 };
@@ -80,7 +86,7 @@ function Paladin:RetributionSingleTarget()
 		return RT.RadiantDecree;
 	end
 
-	if holyPower >= 3 or buff[RT.DivinePurpose].up then
+	if holyPower >= 4 or buff[RT.DivinePurpose].up then
 		if talents[RT.FinalVerdict] then
 			if cooldown[RT.FinalVerdict].ready then return RT.FinalVerdict end;
 		elseif cooldown[RT.TemplarsVerdict].ready then
@@ -120,15 +126,19 @@ function Paladin:RetributionSingleTarget()
 		return RT.DivineStorm;
 	end
 
-	if talents[RT.ImprovedCrusaderStrike] and cooldown[RT.CrusaderStrike].charges > 1 then
+	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarSlash].ready and MaxDps.Spells[RT.TemplarSlash] then
+		return RT.TemplarSlash;
+	end
+
+	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarStrike].charges >= 1 and MaxDps.Spells[RT.TemplarStrike] then
+		return RT.TemplarStrike;
+	end
+
+	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and (talents[RT.ImprovedCrusaderStrike] and cooldown[RT.CrusaderStrike].charges > 1) then
 		return RT.CrusaderStrike;
 	end
 
-	if cooldown[RT.Consecration].ready then
-		return RT.Consecration;
-	end
-
-	if cooldown[RT.CrusaderStrike].ready then
+	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and cooldown[RT.CrusaderStrike].ready then
 		return RT.CrusaderStrike;
 	end
 end
@@ -184,23 +194,27 @@ function Paladin:RetributionMultiTarget()
 		return RT.BladeOfJustice;
 	end
 
-	if cooldown[RT.Consecration].ready then
+	if cooldown[RT.Consecration].ready and not talents[RT.ConsecratedBlade] and not talents[RT.DivineHammer] then
 		return RT.Consecration;
 	end
 
-	if buff[RT.EmpyreanPower].up then
+	if buff[RT.EmpyreanPower].up or holyPower >= 4 then
 		return RT.DivineStorm;
 	end
 
-	if talents[RT.ImprovedCrusaderStrike] and cooldown[RT.CrusaderStrike].charges > 1 then
+	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarSlash].ready and MaxDps.Spells[RT.TemplarSlash] then
+		return RT.TemplarSlash;
+	end
+
+	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarStrike].charges >= 1 and MaxDps.Spells[RT.TemplarStrike] then
+		return RT.TemplarStrike;
+	end
+
+	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and (talents[RT.ImprovedCrusaderStrike] and cooldown[RT.CrusaderStrike].charges > 1) then
 		return RT.CrusaderStrike;
 	end
 
-	if (holyPower == 3 or holyPower == 4) then
-		return RT.DivineStorm;
-	end
-
-	if cooldown[RT.CrusaderStrike].ready then
+	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and cooldown[RT.CrusaderStrike].ready then
 		return RT.CrusaderStrike;
 	end
 end
