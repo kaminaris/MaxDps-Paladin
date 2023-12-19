@@ -1,161 +1,96 @@
-local _, addonTable = ...;
+
+local _, addonTable = ...
 
 --- @type MaxDps
-if not MaxDps then return end;
+if not MaxDps then return end
 
-local Paladin = addonTable.Paladin;
-local MaxDps = MaxDps;
-local UnitPower = UnitPower;
-local HolyPower = Enum.PowerType.HolyPower;
-local HL = {
-    AvengingCrusader = 216331,
-    AvengingWrath = 31884,
-    Consecration = 26573,
-    CrusaderStrike = 35395,
-    CrusadersMight = 196926,
-    DivineToll = 375576,
-    HammerOfWrath = 24275,
-    HolyAvenger = 105809,
-    HolyShock = 20473,
-    Judgment = 275773,
-    LightOfDawn = 85222,
-    LightsHammer = 114158,
-    ShieldOfTheRighteous = 53600,
-    TyrsDeliverance = 200652,
-    WordOfGlory = 85673,
-    --
-    --Kyrian
-    KyrianDivineToll = 304971,
-    --
-    --Venthyr
-    AshenHallow = 316958,
-    --
-    --NightFae
-    BlessingofSpring = 328282,
-    BlessingofSummer = 328620,
-    BlessingofAutumn = 328622,
-    BlessingofWinter = 328281,
-    --
-    --Necrolord
-    VanquishersHammer = 328204,
-    --
-};
+local Paladin = addonTable.Paladin
+local MaxDps = MaxDps
+local UnitPower = UnitPower
+local UnitHealth = UnitHealth
+local UnitAura = UnitAura
+local GetSpellDescription = GetSpellDescription
+local UnitHealthMax = UnitHealthMax
+local UnitPowerMax = UnitPowerMax
+local HolyPower = Enum.PowerType.HolyPower
 
-local CN = {
-	None      = 0,
-	Kyrian    = 1,
-	Venthyr   = 2,
-	NightFae  = 3,
-	Necrolord = 4
-};
+local fd
+local cooldown
+local buff
+local debuff
+local talents
+local targets
+local holyPower
+local targetHP
+local targetmaxHP
+local targethealthPerc
+local curentHP
+local maxHP
+local healthPerc
 
-setmetatable(HL, Paladin.spellMeta);
+local className, classFilename, classId = UnitClass('player')
+local currentSpec = GetSpecialization()
+local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None"
+local classtable
 
 function Paladin:Holy()
-    local fd = MaxDps.FrameData;
-    local covenantId = fd.covenant.covenantId;
-    local holyPower = UnitPower('player', HolyPower);
-    fd.holyPower = holyPower;
-    local cooldown = fd.cooldown;
-    local buff = fd.buff;
-    local talents = fd.talents;
-    local targetHp = MaxDps:TargetPercentHealth() * 100;
+    fd = MaxDps.FrameData
+    cooldown = fd.cooldown
+    buff = fd.buff
+    debuff = fd.debuff
+    talents = fd.talents
+    targets = MaxDps:SmartAoe()
+    holyPower = UnitPower('player', HolyPower)
+    targetHP = UnitHealth('target')
+    targetmaxHP = UnitHealthMax('target')
+    targethealthPerc = (targetHP / targetmaxHP) * 100
+    curentHP = UnitHealth('player')
+    maxHP = UnitHealthMax('player')
+    healthPerc = (curentHP / maxHP) * 100
+    classtable = MaxDps.SpellTable
+    --setmetatable(classtable, Paladin.spellMeta)
 
-    -- Essences
-    MaxDps:GlowEssences();
-
-    -- Cooldowns
-    MaxDps:GlowCooldown(HL.AvengingWrath, cooldown[HL.AvengingWrath].ready);
-
-    --talents
-
-    if talents[HL.LightsHammer] then
-        MaxDps:GlowCooldown(HL.LightsHammer, cooldown[HL.LightsHammer].ready);
+	if talents[classtable.AvengingWrath] and not talents[classtable.Sentinel] then
+        MaxDps:GlowCooldown(classtable.AvengingWrath, cooldown[classtable.AvengingWrath].ready)
     end
 
-    if talents[HL.HolyAvenger] then
-        MaxDps:GlowCooldown(HL.HolyAvenger, cooldown[HL.HolyAvenger].ready);
-    end
+    --if targets > 1  then
+    --    return Paladin:HolyMultiTarget()
+    --end
+    return Paladin:HolySingleTarget()
+end
 
-    if talents[HL.AvengingCrusader] then
-        MaxDps:GlowCooldown(HL.AvengingCrusader, cooldown[HL.AvengingCrusader].ready);
-    end
+--optional abilities list
 
-    --Covenant
-    --Kyrian
-    if covenantId == CN.Kyrian then
-        MaxDps:GlowCooldown(HL.KyrianDivineToll, cooldown[HL.KyrianDivineToll].ready);
+--Single-Target Rotation
+function Paladin:HolySingleTarget()
+    --Keep Consecration on the ground. This is especially important in AoE situations.
+    if cooldown[classtable.Consecration].ready then
+        return classtable.Consecration
     end
-    --
-    --Venthyr
-    if covenantId == CN.Venthyr then
-        MaxDps:GlowCooldown(HL.AshenHallow, cooldown[HL.AshenHallow].ready);
+    --Cast Shield of the Righteous if you have the Holy Power available to do so.
+    if holyPower >= 3 and cooldown[classtable.ShieldoftheRighteous].ready then
+        return classtable.ShieldoftheRighteous
     end
-    --
-    --NightFae
-    --HL.BlessingofSpring Gives Healing
+    --Cast Judgment off cooldown if using the Righteous Judgment talent.
+    if talents[classtable.RighteousJudgment] and cooldown[classtable.Judgment].ready then
+        return classtable.Judgment
+    end
+    --Cast Hammer of Wrath off cooldown.
+    if talents[classtable.HammerofWrath] and (targethealthPerc < 20 or buff[classtable.AvengingWrath].up) and cooldown[classtable.HammerofWrath].ready then
+        return classtable.HammerofWrath
+    end
+    --Cast Holy Shock off cooldown.
+    if talents[classtable.HolyShock] and cooldown[classtable.HolyShock].ready then
+        return classtable.HolyShock
+    end
+    --Use Crusader Strike if everything else is on cooldown.
+    if cooldown[classtable.CrusaderStrike].ready then
+        return classtable.CrusaderStrike
+    end
+end
 
-    if covenantId == CN.NightFae then
-        MaxDps:GlowCooldown(HL.BlessingofSummer, cooldown[HL.BlessingofSummer].ready);
-    end
+--Multi-Target Rotation
+function Paladin:HolyMultiTarget()
 
-    if covenantId == CN.NightFae then
-        MaxDps:GlowCooldown(HL.BlessingofAutumn, cooldown[HL.BlessingofAutumn].ready);
-    end
-
-    if covenantId == CN.NightFae then
-        MaxDps:GlowCooldown(HL.BlessingofWinter, cooldown[HL.BlessingofWinter].ready);
-    end
-    --
-    --Necrolord
-    if covenantId == CN.Necrolord then
-        MaxDps:GlowCooldown(HL.VanquishersHammer, cooldown[HL.VanquishersHammer].ready);
-    end
-
-    -- Spenders
-    if talents[HL.LightOfDawn] then
-        MaxDps:GlowCooldown(HL.LightOfDawn, holyPower == 5);
-    end
-
-    MaxDps:GlowCooldown(HL.WordOfGlory, holyPower == 5);
-
-    if talents[HL.DivineToll] then
-        MaxDps:GlowCooldown(HL.DivineToll, (holyPower <= 1) and cooldown[HL.DivineToll].ready);
-    end
-
-    if talents[HL.LightsHammer] then
-        MaxDps:GlowCooldown(HL.LightsHammer, cooldown[HL.LightsHammer].ready);
-    end
-
-    if talents[HL.TyrsDeliverance] then
-        MaxDps:GlowCooldown(HL.TyrsDeliverance, cooldown[HL.TyrsDeliverance].ready);
-    end
-
-    if cooldown[HL.HolyShock].ready then
-        return HL.HolyShock;
-    end
-
-    if cooldown[HL.CrusaderStrike].ready and talents[HL.CrusadersMight] then
-        return HL.CrusaderStrike;
-    end
-
-    if (targetHp <= 20 or buff[HL.AvengingWrath].up) and cooldown[HL.HammerOfWrath].ready then
-        return HL.HammerOfWrath;
-    end
-
-    if cooldown[HL.Judgment].ready then
-        return HL.Judgment;
-    end
-
-    if cooldown[HL.Consecration].ready then
-        return HL.Consecration;
-    end
-
-    if cooldown[HL.CrusaderStrike].ready then
-        return HL.CrusaderStrike;
-    end
-
-    if cooldown[HL.ShieldOfTheRighteous].ready and holyPower >= 3 then
-        return HL.ShieldOfTheRighteous;
-    end
 end

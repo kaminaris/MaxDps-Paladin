@@ -1,248 +1,280 @@
-local _, addonTable = ...;
+
+local _, addonTable = ...
 
 --- @type MaxDps
 if not MaxDps then return end
 
-local Paladin = addonTable.Paladin;
-local MaxDps = MaxDps;
-local UnitPower = UnitPower;
-local HolyPower = Enum.PowerType.HolyPower;
-local RT = {
-	AvengingWrath = 31884,
-	AvengingWrathTalent = 384376,
-	AvengingWrathMightTalent = 384442,
-	BladeOfJustice = 184575,
-	ConsecratedBlade = 404834,
-	Consecration = 26573,
-	ConsecrationBuff = 188370,
-	Crusade = 231895,
-	CrusadeTalent = 384392,
-	CrusaderStrike = 35395,
-	CrusadingStrikes = 404542,
-	DivineHammer = 198034,
-	DivinePurpose = 223819,
-	DivineStorm = 53385,
-	DivineToll = 375576,
-	EmpyreanPower = 326733,
-	ExecutionSentence = 343527,
-	Exorcism = 383185,
-	FlashOfLight = 19750,
-	FinalReckoning = 343721,
-	FinalVerdict = 383328,
-	GreaterJudgment = 231663,
-	HammerOfWrath = 24275,
-	HolyAvenger = 105809,
-	ImprovedCrusaderStrike = 383254,
-	Judgment = 20271,
-	JudgmentDebuff = 197277,
-	RadiantDecree = 383469,
-	RadiantDecreeTalent = 384052,
-	SelflessHealer = 114250,
-	SelflessHealerTalent = 85804,
-	Seraphim = 152262,
-	TemplarSlash = 406647,
-	TemplarStrike = 407480,
-	TemplarStrikes = 406646,
-	TemplarsVerdict = 85256,
-	WakeOfAshes = 255937
-};
-setmetatable(RT, Paladin.spellMeta);
+local Paladin = addonTable.Paladin
+local MaxDps = MaxDps
+local UnitPower = UnitPower
+local UnitHealth = UnitHealth
+local UnitAura = UnitAura
+local GetSpellDescription = GetSpellDescription
+local UnitHealthMax = UnitHealthMax
+local UnitPowerMax = UnitPowerMax
+local HolyPower = Enum.PowerType.HolyPower
+
+local fd
+local cooldown
+local buff
+local debuff
+local talents
+local targets
+local holyPower
+local targetHP
+local targetmaxHP
+local targethealthPerc
+local curentHP
+local maxHP
+local healthPerc
+
+local className, classFilename, classId = UnitClass('player')
+local currentSpec = GetSpecialization()
+local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None"
+local classtable
 
 function Paladin:Retribution()
-	-- Essences
-	MaxDps:GlowEssences();
-	Paladin:RetributionCooldowns(MaxDps:TargetPercentHealth('player') * 100)
+    fd = MaxDps.FrameData
+    cooldown = fd.cooldown
+    buff = fd.buff
+    debuff = fd.debuff
+    talents = fd.talents
+    targets = MaxDps:SmartAoe()
+    holyPower = UnitPower('player', HolyPower)
+    targetHP = UnitHealth('target')
+    targetmaxHP = UnitHealthMax('target')
+    targethealthPerc = (targetHP / targetmaxHP) * 100
+    curentHP = UnitHealth('player')
+    maxHP = UnitHealthMax('player')
+    healthPerc = (curentHP / maxHP) * 100
+    classtable = MaxDps.SpellTable
+    classtable.DivineArbiterBuff = 406975
+    classtable.EmpyreanLegacyBuff = 387178
+    classtable.EmpyreanPowerBuff = 326733
+    classtable.EchoesofWrathBuff = 423590
+    classtable.ExpurgationDot = 383346
+    classtable.TemplarSlash = 406647
+    classtable.FinalVerdictBuff = 383329
+    --setmetatable(classtable, Paladin.spellMeta)
 
-	local fd = MaxDps.FrameData;
-	fd.targets = MaxDps:SmartAoe();
-	local targets = fd.targets;
+	if talents[classtable.AvengingWrath] then
+        MaxDps:GlowCooldown(classtable.AvengingWrath, cooldown[classtable.AvengingWrath].ready)
+    end
 
-	if targets < 2 then
-		return Paladin:RetributionSingleTarget()
-	else
-		return Paladin:RetributionMultiTarget()
-	end
+    if targets > 1  then
+        return Paladin:RetributionMultiTarget()
+    end
+    return Paladin:RetributionSingleTarget()
 end
 
+--optional abilities list
+--Generators
+--Spenders
+--Cooldowns/Other
+--Crusading Strikes
+--Vanguard of Justice
+--Avenging Wrath: Might
+--Templar Strikes
+--Empyrean Power
+--Crusade
+--Holy Blade
+--Empyrean Legacy
+--Execution Sentence
+--Wake of Ashes
+--Divine Arbiter
+--Final Reckoning
+--Divine Toll
+--Consecrated Blade
+--Tier 30 4pc Set Bonus
+--Divine Hammer
+--Tier 31 Set Bonus
+
+--Single-Target Rotation
 function Paladin:RetributionSingleTarget()
-	local fd = MaxDps.FrameData;
-	local holyPower = UnitPower('player', HolyPower);
-	fd.holyPower = holyPower;
-	local cooldown = fd.cooldown;
-	local buff = fd.buff;
-	local debuff = fd.debuff;
-	local talents = fd.talents;
-	local targetHp = MaxDps:TargetPercentHealth() * 100;
-
-	if talents[RT.Seraphim] and cooldown[RT.Seraphim].ready and holyPower >=3 then
-		return RT.Seraphim;
+    ----Cast Avenging Wrath.
+    --if talents[classtable.AvengingWrath] and cooldown[classtable.AvengingWrath].ready then
+    --    return classtable.AvengingWrath
+    --end
+    --Cast Crusade if you have at least 4 Holy Power.
+    if talents[classtable.Crusade] and holyPower >= 4 and cooldown[classtable.Crusade].ready then
+        return classtable.Crusade
+    end
+    --Cast Execution Sentence.
+    if talents[classtable.ExecutionSentence] and cooldown[classtable.ExecutionSentence].ready then
+        return classtable.ExecutionSentence
+    end
+    --Cast Final Reckoning if you have at least 4 Holy Power.
+    if talents[classtable.FinalReckoning] and holyPower >= 4 and cooldown[classtable.FinalReckoning].ready then
+        return classtable.FinalReckoning
+    end
+    --Cast Divine Storm if you have an Empyrean Power proc and 5 Holy Power.
+    if talents[classtable.DivineStorm] and talents[classtable.EmpyreanPower] and buff[classtable.EmpyreanPowerBuff].up and holyPower >= 5 and cooldown[classtable.DivineStorm].ready then
+        return classtable.DivineStorm
+    end
+    --Cast Final Verdict if you have 5 Holy Power or Echoes of Wrath active.
+    if talents[classtable.FinalVerdict] and (holyPower >= 5 or (buff[classtable.EchoesofWrathBuff].up and holyPower >= 4)) and cooldown[classtable.FinalVerdict].ready then
+        return classtable.FinalVerdict
+    end
+    --Cast Wake of Ashes if you have 2 or less Holy Power.
+    if talents[classtable.WakeofAshes] and holyPower <= 2 and cooldown[classtable.WakeofAshes].ready then
+        return classtable.WakeofAshes
+    end
+    --Cast Blade of Justice if Expurgation is not active on your target.
+    if MaxDps.tier and MaxDps.tier[31].count >= 2 and talents[classtable.BladeofJustice] and (talents[classtable.Expurgation] and not debuff[classtable.ExpurgationDot].up) and cooldown[classtable.BladeofJustice].ready then
+        return classtable.BladeofJustice
+    end
+    --Cast Divine Toll if you have 3 or less Holy Power.
+    if talents[classtable.DivineToll] and holyPower <= 3 and cooldown[classtable.DivineToll].ready then
+        return classtable.DivineToll
+    end
+    --Cast Judgment.
+    if cooldown[classtable.Judgment].ready then
+        return classtable.Judgment
+    end
+    --Cast Hammer of Wrath if your target is above 20% health, or if you have 3 or less Holy Power.
+    if talents[classtable.HammerofWrath] and ((targethealthPerc < 20 or buff[classtable.AvengingWrath].up or (talents[classtable.FinalVerdict] and buff[classtable.FinalVerdictBuff].up)) and holyPower <= 4) and cooldown[classtable.HammerofWrath].ready then
+        return classtable.HammerofWrath
+    end
+    --Cast Templar Slash if it will expire within a GCD.
+    if MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready then
+        return classtable.TemplarStrike
+    end
+    if talents[classtable.TemplarStrikes] and MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready then
+        return classtable.TemplarSlash
+    end
+	--if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarSlash].ready and MaxDps.Spells[classtable.TemplarSlash] then
+	--	return classtable.TemplarSlash
+	--end
+	--if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarStrike].charges >= 1 and MaxDps.Spells[classtable.TemplarStrike] then
+	--	return classtable.TemplarStrike
+	--end
+    --Cast Blade of Justice.
+    if (talents[classtable.BladeofJustice] and not talents[classtable.HolyBlade] and cooldown[classtable.BladeofJustice].ready) or (talents[classtable.BladeofJustice] and talents[classtable.HolyBlade] and holyPower <= 3 and cooldown[classtable.BladeofJustice].ready) then
+        return classtable.BladeofJustice
+    end
+    --Cast Divine Storm if you have an Empyrean Power proc.
+    if talents[classtable.DivineStorm] and talents[classtable.EmpyreanPower] and buff[classtable.EmpyreanPowerBuff].up and cooldown[classtable.DivineStorm].ready then
+        return classtable.DivineStorm
+    end
+	if not talents[classtable.TemplarStrikes] and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].count == 2 and cooldown[classtable.CrusaderStrike].ready then
+		return classtable.CrusaderStrike
 	end
-
-	if talents[RT.ExecutionSentence] and holyPower >= 3 and cooldown[RT.ExecutionSentence].ready then
-		return RT.ExecutionSentence;
+    --Cast Final Verdict with 4 Holy Power.
+    if talents[classtable.FinalVerdict] and ((talents[classtable.VanguardofJustice] and holyPower == 4) or (not talents[classtable.VanguardofJustice] and (holyPower == 3 or holyPower == 4))) and cooldown[classtable.FinalVerdict].ready then
+        return classtable.FinalVerdict
+    end
+	if not talents[classtable.TemplarStrikes] and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
+		return classtable.CrusaderStrike
 	end
-
-	if talents[RT.RadiantDecreeTalent] and holyPower >= 3 and cooldown[RT.RadiantDecree].ready then
-		return RT.RadiantDecree;
-	end
-
-	if holyPower >= 4 or buff[RT.DivinePurpose].up then
-		if talents[RT.FinalVerdict] then
-			if cooldown[RT.FinalVerdict].ready then return RT.FinalVerdict end;
-		elseif cooldown[RT.TemplarsVerdict].ready then
-			return RT.TemplarsVerdict;
-		end
-	end
-
-	if talents[RT.DivineToll] and cooldown[RT.DivineToll].ready and not debuff[RT.JudgmentDebuff].up then
-		return RT.DivineToll;
-	end
-
-	if not talents[RT.RadiantDecreeTalent] and talents[RT.WakeOfAshes] and cooldown[RT.WakeOfAshes].ready and holyPower <= 2 then
-		return RT.WakeOfAshes;
-	end
-
-	if talents[RT.Exorcism] and cooldown[RT.Exorcism].ready then
-		return RT.Exorcism;
-	end
-
-	if cooldown[RT.Judgment].ready and holyPower <= 4 and not debuff[RT.GreaterJudgment].up then
-		return RT.Judgment;
-	end
-
-	if targetHp <= 20 and cooldown[RT.HammerOfWrath].ready and holyPower <= 4 then
-		return RT.HammerOfWrath;
-	end
-
-	if cooldown[RT.HammerOfWrath].ready and holyPower <= 4 then
-		if targetHp <= 20 or buff[RT.AvengingWrath].up or buff[RT.Crusade].up then return RT.HammerOfWrath end;
-	end
-
-	if talents[RT.BladeOfJustice] and cooldown[RT.BladeOfJustice].ready and holyPower <= 3 then
-		return RT.BladeOfJustice;
-	end
-
-	if buff[RT.EmpyreanPower].up and not debuff[RT.JudgmentDebuff].up then
-		return RT.DivineStorm;
-	end
-
-	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarSlash].ready and MaxDps.Spells[RT.TemplarSlash] then
-		return RT.TemplarSlash;
-	end
-
-	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarStrike].charges >= 1 and MaxDps.Spells[RT.TemplarStrike] then
-		return RT.TemplarStrike;
-	end
-
-	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and (talents[RT.ImprovedCrusaderStrike] and cooldown[RT.CrusaderStrike].charges > 1) then
-		return RT.CrusaderStrike;
-	end
-
-	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and cooldown[RT.CrusaderStrike].ready then
-		return RT.CrusaderStrike;
-	end
+    --Cast Templar Strikes or Templar Slash.
+    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrikes) and cooldown[classtable.TemplarStrikes].ready) or (MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready) then
+        return (MaxDps:FindSpell(classtable.TemplarStrikes) and classtable.TemplarStrikes) or (MaxDps:FindSpell(classtable.TemplarSlash) and classtable.TemplarSlash)
+    end
+    --Cast Divine Hammer.
+    if talents[classtable.DivineHammer] and cooldown[classtable.DivineHammer].ready then
+        return classtable.DivineHammer
+    end
+    if not talents[classtable.ConsecratedBlade] and not talents[classtable.DivineHammer] and cooldown[classtable.Consecration].ready then
+        return classtable.Consecration
+    end
 end
 
-
+--Multi-Target Rotation
 function Paladin:RetributionMultiTarget()
-	local fd = MaxDps.FrameData;
-	local holyPower = UnitPower('player', HolyPower);
-	fd.holyPower = holyPower;
-	local cooldown = fd.cooldown;
-	local buff = fd.buff;
-	local debuff = fd.debuff;
-	local talents = fd.talents;
-	local targetHp = MaxDps:TargetPercentHealth() * 100;
-
-	if talents[RT.Seraphim] and cooldown[RT.Seraphim].ready and holyPower >=3 then
-		return RT.Seraphim;
+    ----Cast Avenging Wrath.
+    --if talents[classtable.AvengingWrath] and cooldown[classtable.AvengingWrath].ready then
+    --    return classtable.AvengingWrath
+    --end
+    --Cast Crusade if you have at least 4 Holy Power.
+    if talents[classtable.Crusade] and holyPower >= 4 and cooldown[classtable.Crusade].ready then
+        return classtable.Crusade
+    end
+    --Cast Execution Sentence.
+    if talents[classtable.ExecutionSentence] and cooldown[classtable.ExecutionSentence].ready then
+        return classtable.ExecutionSentence
+    end
+    --Cast Final Reckoning if you have at least 4 Holy Power.
+    if talents[classtable.FinalReckoning] and holyPower >= 4 and cooldown[classtable.FinalReckoning].ready then
+        return classtable.FinalReckoning
+    end
+    --Cast Final Verdict if you have 25 stacks of Divine Arbiter or Empyrean Legacy active and 5 Holy Power.
+    if talents[classtable.FinalVerdict] and (buff[classtable.DivineArbiterBuff].count >= 25 or (talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up and holyPower == 5)) and cooldown[classtable.FinalVerdict].ready then
+        return classtable.FinalVerdict
+    end
+    --Cast Divine Storm if you have 5 Holy Power or Echoes of Wrath active.
+    if talents[classtable.DivineStorm] and (holyPower >= 5 or (buff[classtable.EchoesofWrathBuff].up and holyPower >= 4)) and cooldown[classtable.DivineStorm].ready then
+        return classtable.DivineStorm
+    end
+    --Cast Wake of Ashes if you have 2 or less Holy Power.
+    if talents[classtable.WakeofAshes] and holyPower <= 2 and cooldown[classtable.WakeofAshes].ready then
+        return classtable.WakeofAshes
+    end
+    --Cast Blade of Justice if Expurgation is not active on your target.
+    if MaxDps.tier and MaxDps.tier[31].count >= 2 and talents[classtable.BladeofJustice] and (talents[classtable.Expurgation] and not debuff[classtable.ExpurgationDot].up) and cooldown[classtable.BladeofJustice].ready then
+        return classtable.BladeofJustice
+    end
+    --Cast Divine Toll if you have 1 or less Holy Power.
+    if talents[classtable.DivineToll] and holyPower <= 1 and cooldown[classtable.DivineToll].ready then
+        return classtable.DivineToll
+    end
+    if MaxDps.tier and MaxDps.tier[30].count >= 4 then
+        --Cast Blade of Justice if you have 4 or more targets.
+        if talents[classtable.BladeofJustice] and targets >= 4 and cooldown[classtable.BladeofJustice].ready then
+            return classtable.BladeofJustice
+        end
+        --Cast Hammer of Wrath if your target is above 20% health, or if you have 3 or less Holy Power.
+        if talents[classtable.HammerofWrath] and ((targethealthPerc < 20 or buff[classtable.AvengingWrath].up or (talents[classtable.FinalVerdict] and buff[classtable.FinalVerdictBuff].up)) and holyPower <= 4) and cooldown[classtable.HammerofWrath].ready then
+            return classtable.HammerofWrath
+        end
+    end
+    --Cast Judgment.
+    if cooldown[classtable.Judgment].ready then
+        return classtable.Judgment
+    end
+    --Cast Templar Slash if it will expire within a GCD.
+    --if MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready then
+    --    return classtable.TemplarStrike
+    --end
+    --if talents[classtable.TemplarStrikes] and MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready then
+    --    return classtable.TemplarSlash
+    --end
+	if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarSlash].ready and MaxDps.Spells[classtable.TemplarSlash] then
+		return classtable.TemplarSlash
 	end
-
-	if talents[RT.RadiantDecreeTalent] and holyPower >= 3 and cooldown[RT.RadiantDecree].ready then
-		return RT.RadiantDecree;
+	if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarStrike].charges >= 1 and MaxDps.Spells[classtable.TemplarStrike] then
+		return classtable.TemplarStrike
 	end
-
-	if holyPower == 5 then
-		return RT.DivineStorm;
+    --Cast Blade of Justice if you have 4 or more targets.
+    if (talents[classtable.BladeofJustice] and not talents[classtable.HolyBlade] and targets >= 4 and cooldown[classtable.BladeofJustice].ready) or (talents[classtable.BladeofJustice] and talents[classtable.HolyBlade] and holyPower <= 3 and targets >= 4 and cooldown[classtable.BladeofJustice].ready) then
+        return classtable.BladeofJustice
+    end
+	if not talents[classtable.TemplarStrikes] and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].count == 2 and cooldown[classtable.CrusaderStrike].ready then
+		return classtable.CrusaderStrike
 	end
-
-	if talents[RT.DivineToll] and cooldown[RT.DivineToll].ready then
-		return RT.DivineToll;
+    --Cast Divine Storm if you have an Empyrean Power proc.
+    if talents[classtable.DivineStorm] and talents[classtable.EmpyreanPower] and buff[classtable.EmpyreanPowerBuff].up and cooldown[classtable.DivineStorm].ready then
+        return classtable.DivineStorm
+    end
+    --Cast Final Verdict if you have 25 stacks of Divine Arbiter or Empyrean Legacy active and 4 Holy Power.
+    if talents[classtable.FinalVerdict] and (buff[classtable.DivineArbiterBuff].count >= 25 or (talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up and (talents[classtable.VanguardofJustice] and holyPower == 4) or ( not talents[classtable.VanguardofJustice] and holyPower >= 3))) and cooldown[classtable.FinalVerdict].ready then
+        return classtable.FinalVerdict
+    end
+    --Cast Divine Storm with 4 Holy Power.
+    if talents[classtable.DivineStorm] and ((talents[classtable.VanguardofJustice] and holyPower == 4) or (not talents[classtable.VanguardofJustice] and (holyPower == 3 or holyPower == 4))) and cooldown[classtable.DivineStorm].ready then
+        return classtable.DivineStorm
+    end
+	if not talents[classtable.TemplarStrikes] and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
+		return classtable.CrusaderStrike
 	end
-
-	if not talents[RT.RadiantDecreeTalent] and talents[RT.WakeOfAshes] and cooldown[RT.WakeOfAshes].ready and holyPower <= 2 then
-		return RT.WakeOfAshes;
-	end
-
-	if talents[RT.Exorcism] and cooldown[RT.Exorcism].ready and buff[RT.ConsecrationBuff].up then
-		return RT.Exorcism;
-	end
-
-	if cooldown[RT.Judgment].ready and holyPower <= 4 then
-		return RT.Judgment;
-	end
-
-	if targetHp <= 20 and cooldown[RT.HammerOfWrath].ready and holyPower <= 4 then
-		return RT.HammerOfWrath;
-	end
-
-	if cooldown[RT.HammerOfWrath].ready and holyPower <= 4 then
-		if targetHp <= 20 or buff[RT.AvengingWrath].up or buff[RT.Crusade].up then return RT.HammerOfWrath end;
-	end
-
-	if talents[RT.BladeOfJustice] and cooldown[RT.BladeOfJustice].ready and holyPower <= 3 then
-		return RT.BladeOfJustice;
-	end
-
-	if cooldown[RT.Consecration].ready and not talents[RT.ConsecratedBlade] and not talents[RT.DivineHammer] then
-		return RT.Consecration;
-	end
-
-	if buff[RT.EmpyreanPower].up or holyPower >= 4 then
-		return RT.DivineStorm;
-	end
-
-	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarSlash].ready and MaxDps.Spells[RT.TemplarSlash] then
-		return RT.TemplarSlash;
-	end
-
-	if talents[RT.TemplarStrikes] and cooldown[RT.TemplarStrike].charges >= 1 and MaxDps.Spells[RT.TemplarStrike] then
-		return RT.TemplarStrike;
-	end
-
-	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and (talents[RT.ImprovedCrusaderStrike] and cooldown[RT.CrusaderStrike].charges > 1) then
-		return RT.CrusaderStrike;
-	end
-
-	if not talents[RT.TemplarStrikes] and not talents[RT.CrusadingStrikes] and cooldown[RT.CrusaderStrike].ready then
-		return RT.CrusaderStrike;
-	end
-end
-
----@param playerHealthPct number
-function Paladin:RetributionCooldowns(playerHealthPct)
-	local holyPower = UnitPower('player', HolyPower);
-	local fd = MaxDps.FrameData;
-	local cooldown = fd.cooldown;
-	local buff = fd.buff;
-	local talents = fd.talents;
-
-	-- Cooldowns
-	MaxDps:GlowCooldown(RT.FlashOfLight, talents[RT.SelflessHealerTalent] and buff[RT.SelflessHealer].count > 3 and playerHealthPct < 80);
-
-	if talents[RT.CrusadeTalent] then
-		MaxDps:GlowCooldown(RT.Crusade, cooldown[RT.Crusade].ready and holyPower >= 3);
-	end
-
-	if talents[RT.AvengingWrathMightTalent] or talents[RT.AvengingWrathTalent] then
-		MaxDps:GlowCooldown(RT.AvengingWrath, cooldown[RT.AvengingWrath].ready and holyPower >= 3)
-	end
-
-	if talents[RT.FinalReckoning] and holyPower >=3 then
-		MaxDps:GlowCooldown(RT.FinalReckoning, cooldown[RT.FinalReckoning].ready and holyPower >= 3);
-	end
-
-	if talents[RT.HolyAvenger] then
-		MaxDps:GlowCooldown(RT.HolyAvenger, cooldown[RT.HolyAvenger].ready);
-	end
+    --Cast Templar Strikes or Templar Slash.
+    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrikes) and cooldown[classtable.TemplarStrikes].ready) or (MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready) then
+        return (MaxDps:FindSpell(classtable.TemplarStrikes) and classtable.TemplarStrikes) or (MaxDps:FindSpell(classtable.TemplarSlash) and classtable.TemplarSlash)
+    end
+    --Cast Divine Hammer.
+    if talents[classtable.DivineHammer] and cooldown[classtable.DivineHammer].ready then
+        return classtable.DivineHammer
+    end
+    if not talents[classtable.ConsecratedBlade] and not talents[classtable.DivineHammer] and cooldown[classtable.Consecration].ready then
+        return classtable.Consecration
+    end
 end
