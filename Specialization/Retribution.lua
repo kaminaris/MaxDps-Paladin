@@ -160,7 +160,7 @@ function Paladin:RetributionSingleTarget()
 		return classtable.CrusaderStrike
 	end
     --Cast Final Verdict with 4 Holy Power.
-    if talents[classtable.FinalVerdict] and ((talents[classtable.VanguardofJustice] and holyPower == 4) or (not talents[classtable.VanguardofJustice] and (holyPower == 3 or holyPower == 4))) and cooldown[classtable.FinalVerdict].ready then
+    if talents[classtable.FinalVerdict] and ((buff[classtable.DivineArbiterBuff].count >= 25 or talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up) and ((talents[classtable.VanguardofJustice] and holyPower == 4) or ( not talents[classtable.VanguardofJustice] and holyPower >= 3))) and cooldown[classtable.FinalVerdict].ready then
         return classtable.FinalVerdict
     end
 	if not talents[classtable.TemplarStrikes] and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
@@ -198,7 +198,7 @@ function Paladin:RetributionMultiTarget()
         return classtable.FinalReckoning
     end
     --Cast Final Verdict if you have 25 stacks of Divine Arbiter or Empyrean Legacy active and 5 Holy Power.
-    if talents[classtable.FinalVerdict] and (buff[classtable.DivineArbiterBuff].count >= 25 or (talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up and holyPower == 5)) and cooldown[classtable.FinalVerdict].ready then
+    if talents[classtable.FinalVerdict] and ((buff[classtable.DivineArbiterBuff].count >= 25 or talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up) and ((talents[classtable.VanguardofJustice] and holyPower == 4) or ( not talents[classtable.VanguardofJustice] and holyPower >= 3))) and cooldown[classtable.FinalVerdict].ready then
         return classtable.FinalVerdict
     end
     --Cast Divine Storm if you have 5 Holy Power or Echoes of Wrath active.
@@ -256,7 +256,7 @@ function Paladin:RetributionMultiTarget()
         return classtable.DivineStorm
     end
     --Cast Final Verdict if you have 25 stacks of Divine Arbiter or Empyrean Legacy active and 4 Holy Power.
-    if talents[classtable.FinalVerdict] and (buff[classtable.DivineArbiterBuff].count >= 25 or (talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up and (talents[classtable.VanguardofJustice] and holyPower == 4) or ( not talents[classtable.VanguardofJustice] and holyPower >= 3))) and cooldown[classtable.FinalVerdict].ready then
+    if talents[classtable.FinalVerdict] and ((buff[classtable.DivineArbiterBuff].count >= 25 or talents[classtable.EmpyreanLegacy] and buff[classtable.EmpyreanLegacyBuff].up) and ((talents[classtable.VanguardofJustice] and holyPower == 4) or ( not talents[classtable.VanguardofJustice] and holyPower >= 3))) and cooldown[classtable.FinalVerdict].ready then
         return classtable.FinalVerdict
     end
     --Cast Divine Storm with 4 Holy Power.
