@@ -18,6 +18,7 @@ local fd
 local cooldown
 local buff
 local debuff
+local gcd
 local talents
 local targets
 local holyPower
@@ -33,11 +34,14 @@ local currentSpec = GetSpecialization()
 local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None"
 local classtable
 
+local lastTemplarStrike
+
 function Paladin:Retribution()
     fd = MaxDps.FrameData
     cooldown = fd.cooldown
     buff = fd.buff
     debuff = fd.debuff
+    gcd = fd.gcd
     talents = fd.talents
     targets = MaxDps:SmartAoe()
     holyPower = UnitPower('player', HolyPower)
@@ -53,6 +57,7 @@ function Paladin:Retribution()
     classtable.EmpyreanPowerBuff = 326733
     classtable.EchoesofWrathBuff = 423590
     classtable.ExpurgationDot = 383346
+    classtable.TemplarStrike = 407480
     classtable.TemplarSlash = 406647
     classtable.FinalVerdictBuff = 383329
     --setmetatable(classtable, Paladin.spellMeta)
@@ -88,6 +93,16 @@ end
 --Tier 30 4pc Set Bonus
 --Divine Hammer
 --Tier 31 Set Bonus
+
+local function TemplarStrikeChangeWinthinGCD()
+    local currentTime = GetTime()
+    if currentTime and lastTemplarStrike then
+        if currentTime - lastTemplarStrike <= gcd + 0.5 then
+            return true
+        end
+    end
+    return false
+end
 
 --Single-Target Rotation
 function Paladin:RetributionSingleTarget()
@@ -136,18 +151,12 @@ function Paladin:RetributionSingleTarget()
         return classtable.HammerofWrath
     end
     --Cast Templar Slash if it will expire within a GCD.
-    if MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready then
-        return classtable.TemplarStrike
+    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready) and TemplarStrikeChangeWinthinGCD() then
+        if MaxDps:FindSpell(classtable.TemplarStrike) then
+            lastTemplarStrike = GetTime()
+        end
+        return (MaxDps:FindSpell(classtable.TemplarStrike) and classtable.TemplarStrike)
     end
-    if talents[classtable.TemplarStrikes] and MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready then
-        return classtable.TemplarSlash
-    end
-	--if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarSlash].ready and MaxDps.Spells[classtable.TemplarSlash] then
-	--	return classtable.TemplarSlash
-	--end
-	--if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarStrike].charges >= 1 and MaxDps.Spells[classtable.TemplarStrike] then
-	--	return classtable.TemplarStrike
-	--end
     --Cast Blade of Justice.
     if (talents[classtable.BladeofJustice] and not talents[classtable.HolyBlade] and cooldown[classtable.BladeofJustice].ready) or (talents[classtable.BladeofJustice] and talents[classtable.HolyBlade] and holyPower <= 3 and cooldown[classtable.BladeofJustice].ready) then
         return classtable.BladeofJustice
@@ -167,8 +176,11 @@ function Paladin:RetributionSingleTarget()
 		return classtable.CrusaderStrike
 	end
     --Cast Templar Strikes or Templar Slash.
-    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrikes) and cooldown[classtable.TemplarStrikes].ready) or (MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready) then
-        return (MaxDps:FindSpell(classtable.TemplarStrikes) and classtable.TemplarStrikes) or (MaxDps:FindSpell(classtable.TemplarSlash) and classtable.TemplarSlash)
+    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready) or (MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready) then
+        if MaxDps:FindSpell(classtable.TemplarStrike) then
+            lastTemplarStrike = GetTime()
+        end
+        return (MaxDps:FindSpell(classtable.TemplarStrike) and classtable.TemplarStrike) or (MaxDps:FindSpell(classtable.TemplarSlash) and classtable.TemplarSlash)
     end
     --Cast Divine Hammer.
     if talents[classtable.DivineHammer] and cooldown[classtable.DivineHammer].ready then
@@ -232,18 +244,12 @@ function Paladin:RetributionMultiTarget()
         return classtable.Judgment
     end
     --Cast Templar Slash if it will expire within a GCD.
-    --if MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready then
-    --    return classtable.TemplarStrike
-    --end
-    --if talents[classtable.TemplarStrikes] and MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready then
-    --    return classtable.TemplarSlash
-    --end
-	if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarSlash].ready and MaxDps.Spells[classtable.TemplarSlash] then
-		return classtable.TemplarSlash
-	end
-	if talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarStrike].charges >= 1 and MaxDps.Spells[classtable.TemplarStrike] then
-		return classtable.TemplarStrike
-	end
+    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready) and TemplarStrikeChangeWinthinGCD() then
+        if MaxDps:FindSpell(classtable.TemplarStrike) then
+            lastTemplarStrike = GetTime()
+        end
+        return (MaxDps:FindSpell(classtable.TemplarStrike) and classtable.TemplarStrike)
+    end
     --Cast Blade of Justice if you have 4 or more targets.
     if (talents[classtable.BladeofJustice] and not talents[classtable.HolyBlade] and targets >= 4 and cooldown[classtable.BladeofJustice].ready) or (talents[classtable.BladeofJustice] and talents[classtable.HolyBlade] and holyPower <= 3 and targets >= 4 and cooldown[classtable.BladeofJustice].ready) then
         return classtable.BladeofJustice
@@ -267,8 +273,11 @@ function Paladin:RetributionMultiTarget()
 		return classtable.CrusaderStrike
 	end
     --Cast Templar Strikes or Templar Slash.
-    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrikes) and cooldown[classtable.TemplarStrikes].ready) or (MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready) then
-        return (MaxDps:FindSpell(classtable.TemplarStrikes) and classtable.TemplarStrikes) or (MaxDps:FindSpell(classtable.TemplarSlash) and classtable.TemplarSlash)
+    if talents[classtable.TemplarStrikes] and (MaxDps:FindSpell(classtable.TemplarStrike) and cooldown[classtable.TemplarStrike].ready) or (MaxDps:FindSpell(classtable.TemplarSlash) and cooldown[classtable.TemplarSlash].ready) then
+        if MaxDps:FindSpell(classtable.TemplarStrike) then
+            lastTemplarStrike = GetTime()
+        end
+        return (MaxDps:FindSpell(classtable.TemplarStrike) and classtable.TemplarStrike) or (MaxDps:FindSpell(classtable.TemplarSlash) and classtable.TemplarSlash)
     end
     --Cast Divine Hammer.
     if talents[classtable.DivineHammer] and cooldown[classtable.DivineHammer].ready then
