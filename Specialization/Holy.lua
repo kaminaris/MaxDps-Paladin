@@ -166,7 +166,7 @@ end
 
 function Holy:callaction()
     if (MaxDps:FindSpell(classtable.Rebuke) and CheckSpellCosts(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
-        MaxDps:GlowCooldown(classtable.Rebuke, select(8,UnitCastingInfo('target') == false) and cooldown[classtable.Rebuke].ready)
+        MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
     if (MaxDps:FindSpell(classtable.AvengingWrath) and CheckSpellCosts(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
         MaxDps:GlowCooldown(classtable.AvengingWrath, cooldown[classtable.AvengingWrath].ready)

@@ -313,7 +313,7 @@ end
 
 function Retribution:callaction()
     if (MaxDps:FindSpell(classtable.Rebuke) and CheckSpellCosts(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
-        MaxDps:GlowCooldown(classtable.Rebuke, select(8,UnitCastingInfo('target') == false) and cooldown[classtable.Rebuke].ready)
+        MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
     local cooldownsCheck = Retribution:cooldowns()
     if cooldownsCheck then
