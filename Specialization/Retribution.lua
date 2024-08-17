@@ -181,6 +181,23 @@ local function CheckPrevSpell(spell)
 end
 
 
+local function boss()
+    if UnitExists('boss1')
+    or UnitExists('boss2')
+    or UnitExists('boss3')
+    or UnitExists('boss4')
+    or UnitExists('boss5')
+    or UnitExists('boss6')
+    or UnitExists('boss7')
+    or UnitExists('boss8')
+    or UnitExists('boss9')
+    or UnitExists('boss10') then
+        return true
+    end
+    return false
+end
+
+
 function Retribution:precombat()
     if (MaxDps:FindSpell(classtable.ShieldofVengeance) and CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and cooldown[classtable.ShieldofVengeance].ready then
         return classtable.ShieldofVengeance
