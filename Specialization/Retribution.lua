@@ -75,9 +75,7 @@ local ds_castable
 
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnown(spell) then return false end
-    if C_Spell.IsSpellPassive(spell) then return false end
     if not C_Spell.IsSpellUsable(spell) then return false end
-
     local costs = C_Spell.GetSpellPowerCost(spell)
     if type(costs) ~= 'table' and spellstring then return true end
     for i,costtable in pairs(costs) do
@@ -181,14 +179,14 @@ end
 
 
 function Retribution:precombat()
-    if (CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and cooldown[classtable.ShieldofVengeance].ready then
-        return classtable.ShieldofVengeance
-    end
+    --if (CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and cooldown[classtable.ShieldofVengeance].ready then
+    --    return classtable.ShieldofVengeance
+    --end
 end
 function Retribution:cooldowns()
-    if (CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and (ttd >15 and ( not talents[classtable.ExecutionSentence] or not debuff[classtable.ExecutionSentenceDeBuff].up )) and cooldown[classtable.ShieldofVengeance].ready then
-        return classtable.ShieldofVengeance
-    end
+    --if (CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and (ttd >15 and ( not talents[classtable.ExecutionSentence] or not debuff[classtable.ExecutionSentenceDeBuff].up )) and cooldown[classtable.ShieldofVengeance].ready then
+    --    return classtable.ShieldofVengeance
+    --end
     if (CheckSpellCosts(classtable.ExecutionSentence, 'ExecutionSentence')) and (( not buff[classtable.CrusadeBuff].up and cooldown[classtable.Crusade].remains >15 or buff[classtable.CrusadeBuff].count == 10 or cooldown[classtable.AvengingWrath].remains <0.75 or cooldown[classtable.AvengingWrath].remains >15 or talents[classtable.RadiantGlory] ) and ( HolyPower >= 4 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] ) and ( ttd >8 and not talents[classtable.ExecutionersWill] or ttd >12 )) and cooldown[classtable.ExecutionSentence].ready then
         return classtable.ExecutionSentence
     end

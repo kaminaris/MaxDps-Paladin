@@ -72,26 +72,6 @@ local trinket_sync_slot
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnown(spell) then return false end
     if not C_Spell.IsSpellUsable(spell) then return false end
-    if spellstring == 'TouchofDeath' then
-        if targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'KillShot' then
-        if (classtable.SicEmBuff and not buff[classtable.SicEmBuff].up) or (classtable.HuntersPreyBuff and not buff[classtable.HuntersPreyBuff].up) and targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'HammerofWrath' then
-        if ( (classtable.AvengingWrathBuff and not buff[classtable.AvengingWrathBuff].up) or (classtable.FinalVerdictBuff and not buff[classtable.FinalVerdictBuff].up) ) and targethealthPerc > 20 then
-            return false
-        end
-    end
-    if spellstring == 'Execute' then
-        if (classtable.SuddenDeathBuff and not buff[classtable.SuddenDeathBuff].up) and targethealthPerc > 35 then
-            return false
-        end
-    end
     local costs = C_Spell.GetSpellPowerCost(spell)
     if type(costs) ~= 'table' and spellstring then return true end
     for i,costtable in pairs(costs) do
@@ -200,13 +180,13 @@ function Protection:cooldowns()
     end
 end
 function Protection:standard()
-    if (talents[classtable.LightsGuidance] and ( cooldown[classtable.EyeofTyr].remains <2 or buff[classtable.HammerofLightReadyBuff].up ) and ( buff[classtable.RedoubtBuff].count >= 2 or not talents[classtable.BastionofLight] ) and talents[classtable.ofDuskandDawn]) then
+    if (talents[classtable.LightsGuidance] and ( cooldown[classtable.EyeofTyr].remains <2 or buff[classtable.HammerofLightReadyBuff].up ) and ( not talents[classtable.Redoubt] or buff[classtable.RedoubtBuff].count >= 2 or not talents[classtable.BastionofLight] ) and talents[classtable.OfDuskandDawn]) then
         local hammer_of_lightCheck = Protection:hammer_of_light()
         if hammer_of_lightCheck then
             return Protection:hammer_of_light()
         end
     end
-    if (CheckSpellCosts(classtable.HammerofLight, 'HammerofLight')) and (buff[classtable.RedoubtBuff].count == 3 and ( buff[classtable.BlessingofDawnBuff].count >= 1 or not talents[classtable.ofDuskandDawn] )) and cooldown[classtable.HammerofLight].ready then
+    if (CheckSpellCosts(classtable.HammerofLight, 'HammerofLight')) and (( not talents[classtable.Redoubt] or buff[classtable.RedoubtBuff].count == 3 ) and ( buff[classtable.BlessingofDawnBuff].count >= 1 or not talents[classtable.OfDuskandDawn] )) and cooldown[classtable.HammerofLight].ready then
         return classtable.HammerofLight
     end
     if (CheckSpellCosts(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and (( ( HolyPower >2 ) or buff[classtable.BastionofLightBuff].up or buff[classtable.DivinePurposeBuff].up ) and not buff[classtable.HammerofLightReadyBuff].up) and cooldown[classtable.ShieldoftheRighteous].ready then
@@ -324,7 +304,7 @@ function Protection:callaction()
     if standardCheck then
         return standardCheck
     end
-    if (talents[classtable.LightsGuidance] and ( cooldown[classtable.EyeofTyr].remains <2 or buff[classtable.HammerofLightReadyBuff].up ) and ( buff[classtable.RedoubtBuff].count >= 2 or not talents[classtable.BastionofLight] ) and talents[classtable.ofDuskandDawn]) then
+    if (talents[classtable.LightsGuidance] and ( cooldown[classtable.EyeofTyr].remains <2 or buff[classtable.HammerofLightReadyBuff].up ) and ( not talents[classtable.Redoubt] or buff[classtable.RedoubtBuff].count >= 2 or not talents[classtable.BastionofLight] ) and talents[classtable.OfDuskandDawn]) then
         local hammer_of_lightCheck = Protection:hammer_of_light()
         if hammer_of_lightCheck then
             return Protection:hammer_of_light()
