@@ -357,6 +357,8 @@ function Paladin:Protection()
     HolyPower = UnitPower('player', HolyPowerPT)
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
+    classtable.HammerofLight = 427453
+    classtable.HolyArmaments = 432459
     next_armament = function()
         local firstSpell = GetSpellInfo(classtable.HolyArmaments)
         local spellinfo = firstSpell and GetSpellInfo(firstSpell.spellID)
