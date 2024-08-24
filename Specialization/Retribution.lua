@@ -75,27 +75,9 @@ local ds_castable
 
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnown(spell) then return false end
+    if C_Spell.IsSpellPassive(spell) then return false end
     if not C_Spell.IsSpellUsable(spell) then return false end
-    if spellstring == 'TouchofDeath' then
-        if targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'KillShot' then
-        if (classtable.SicEmBuff and not buff[classtable.SicEmBuff].up) or (classtable.HuntersPreyBuff and not buff[classtable.HuntersPreyBuff].up) and targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'HammerofWrath' then
-        if ( (classtable.AvengingWrathBuff and not buff[classtable.AvengingWrathBuff].up) or (classtable.FinalVerdictBuff and not buff[classtable.FinalVerdictBuff].up) ) and targethealthPerc > 20 then
-            return false
-        end
-    end
-    if spellstring == 'Execute' then
-        if (classtable.SuddenDeathBuff and not buff[classtable.SuddenDeathBuff].up) and targethealthPerc > 35 then
-            return false
-        end
-    end
+
     local costs = C_Spell.GetSpellPowerCost(spell)
     if type(costs) ~= 'table' and spellstring then return true end
     for i,costtable in pairs(costs) do
@@ -290,7 +272,7 @@ function Retribution:generators()
             return Retribution:finishers()
         end
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.CrusaderStrike].charges >= 1.75 and ( HolyPower <= 2 or HolyPower <= 3 and cooldown[classtable.BladeofJustice].remains >gcd * 2 or HolyPower == 4 and cooldown[classtable.BladeofJustice].remains >gcd * 2 and cooldown[classtable.Judgment].remains >gcd * 2 )) and cooldown[classtable.CrusaderStrike].ready then
+    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.CrusaderStrike].charges >= 1.75 and ( HolyPower <= 2 or HolyPower <= 3 and cooldown[classtable.BladeofJustice].remains >gcd * 2 or HolyPower == 4 and cooldown[classtable.BladeofJustice].remains >gcd * 2 and cooldown[classtable.Judgment].remains >gcd * 2 )) and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
     local finishersCheck = Retribution:finishers()
@@ -306,7 +288,7 @@ function Retribution:generators()
     if (CheckSpellCosts(classtable.HammerofWrath, 'HammerofWrath')) and (HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum]) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
+    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
 end
@@ -374,6 +356,7 @@ function Paladin:Retribution()
     HolyPowerDeficit = HolyPowerMax - HolyPower
     classtable.TemplarSlash = 406647
     classtable.TemplarStrike = 407480
+    classtable.FinalVerdictBuff = 383329
     for spellId in pairs(MaxDps.Flags) do
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
