@@ -66,104 +66,49 @@ local HolyPowerDeficit
 
 local Holy = {}
 
-
-local function CheckSpellCosts(spell,spellstring)
-    if not IsSpellKnown(spell) then return false end
-    if not C_Spell.IsSpellUsable(spell) then return false end
-    local costs = C_Spell.GetSpellPowerCost(spell)
-    if type(costs) ~= 'table' and spellstring then return true end
-    for i,costtable in pairs(costs) do
-        if UnitPower('player', costtable.type) < costtable.cost then
-            return false
-        end
-    end
-    return true
-end
-local function MaxGetSpellCost(spell,power)
-    local costs = C_Spell.GetSpellPowerCost(spell)
-    if type(costs) ~= 'table' then return 0 end
-    for i,costtable in pairs(costs) do
-        if costtable.name == power then
-            return costtable.cost
-        end
-    end
-    return 0
-end
-
-
-
-local function CheckEquipped(checkName)
-    for i=1,14 do
-        local itemID = GetInventoryItemID('player', i)
-        local itemName = itemID and C_Item.GetItemInfo(itemID) or ''
-        if checkName == itemName then
-            return true
-        end
-    end
-    return false
-end
-
-
-
-
-local function CheckPrevSpell(spell)
-    if MaxDps and MaxDps.spellHistory then
-        if MaxDps.spellHistory[1] then
-            if MaxDps.spellHistory[1] == spell then
-                return true
-            end
-            if MaxDps.spellHistory[1] ~= spell then
-                return false
-            end
-        end
-    end
-    return true
-end
-
-
 function Holy:precombat()
-    if (CheckSpellCosts(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.PaladinAuraBuff].up) and cooldown[classtable.DevotionAura].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.PaladinAuraBuff].up) and cooldown[classtable.DevotionAura].ready then
         MaxDps:GlowCooldown(classtable.DevotionAura, cooldown[classtable.DevotionAura].ready)
     end
-    --if (CheckSpellCosts(classtable.BeaconofLight, 'BeaconofLight')) and (debuff[classtable.BeaconofLightDebuff].count  == 0) and cooldown[classtable.BeaconofLight].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.BeaconofLight, 'BeaconofLight')) and (debuff[classtable.BeaconofLightDebuff].count  == 0) and cooldown[classtable.BeaconofLight].ready then
     --    return classtable.BeaconofLight
     --end
-    --if (CheckSpellCosts(classtable.BeaconofFaith, 'BeaconofFaith')) and ( debuff[classtable.BeaconofFaithDebuff].count  == 0) and cooldown[classtable.BeaconofFaith].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.BeaconofFaith, 'BeaconofFaith')) and ( debuff[classtable.BeaconofFaithDebuff].count  == 0) and cooldown[classtable.BeaconofFaith].ready then
     --    return classtable.BeaconofFaith
     --end
 end
 function Holy:spenders()
-    --if (CheckSpellCosts(classtable.WordofGlory, 'WordofGlory')) and ( ( curentHP <70 or not CheckEquipped('Shield') ) and buff[classtable.ShiningRighteousnessReadyBuff].up or buff[classtable.EmpyreanLegacyBuff].up) and cooldown[classtable.WordofGlory].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and ( ( curentHP <70 or not MaxDps:CheckEquipped('Shield') ) and buff[classtable.ShiningRighteousnessReadyBuff].up or buff[classtable.EmpyreanLegacyBuff].up) and cooldown[classtable.WordofGlory].ready then
     --    return classtable.WordofGlory
     --end
-    --if (CheckSpellCosts(classtable.LightofDawn, 'LightofDawn')) and ( buff[classtable.ShiningRighteousnessReadyBuff].up) and cooldown[classtable.LightofDawn].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.LightofDawn, 'LightofDawn')) and ( buff[classtable.ShiningRighteousnessReadyBuff].up) and cooldown[classtable.LightofDawn].ready then
     --    return classtable.LightofDawn
     --end
-    if (CheckSpellCosts(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and cooldown[classtable.ShieldoftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and cooldown[classtable.ShieldoftheRighteous].ready then
         return classtable.ShieldoftheRighteous
     end
 end
 
 function Holy:callaction()
-    if (CheckSpellCosts(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
         MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
-    if (CheckSpellCosts(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
         MaxDps:GlowCooldown(classtable.AvengingWrath, cooldown[classtable.AvengingWrath].ready)
     end
-    if (CheckSpellCosts(classtable.AvengingCrusader, 'AvengingCrusader')) and cooldown[classtable.AvengingCrusader].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengingCrusader, 'AvengingCrusader')) and cooldown[classtable.AvengingCrusader].ready then
         MaxDps:GlowCooldown(classtable.AvengingCrusader, cooldown[classtable.AvengingCrusader].ready)
     end
-    if (CheckSpellCosts(classtable.BlessingofSummer, 'BlessingofSummer')) and cooldown[classtable.BlessingofSummer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofSummer, 'BlessingofSummer')) and cooldown[classtable.BlessingofSummer].ready then
         return classtable.BlessingofSummer
     end
-    if (CheckSpellCosts(classtable.BlessingofAutumn, 'BlessingofAutumn')) and cooldown[classtable.BlessingofAutumn].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofAutumn, 'BlessingofAutumn')) and cooldown[classtable.BlessingofAutumn].ready then
         return classtable.BlessingofAutumn
     end
-    if (CheckSpellCosts(classtable.BlessingofWinter, 'BlessingofWinter')) and cooldown[classtable.BlessingofWinter].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofWinter, 'BlessingofWinter')) and cooldown[classtable.BlessingofWinter].ready then
         return classtable.BlessingofWinter
     end
-    if (CheckSpellCosts(classtable.BlessingofSpring, 'BlessingofSpring')) and cooldown[classtable.BlessingofSpring].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofSpring, 'BlessingofSpring')) and cooldown[classtable.BlessingofSpring].ready then
         return classtable.BlessingofSpring
     end
     if (not talents[classtable.AvengingCrusader] or cooldown[classtable.AvengingCrusader].remains >gcd or HolyPowerDeficit == 0) then
@@ -172,28 +117,28 @@ function Holy:callaction()
             return Holy:spenders()
         end
     end
-    if (CheckSpellCosts(classtable.DivineToll, 'DivineToll')) and cooldown[classtable.DivineToll].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineToll, 'DivineToll')) and cooldown[classtable.DivineToll].ready then
         MaxDps:GlowCooldown(classtable.DivineToll, cooldown[classtable.DivineToll].ready)
     end
-    if (CheckSpellCosts(classtable.HolyPrism, 'HolyPrism')) and cooldown[classtable.HolyPrism].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HolyPrism, 'HolyPrism')) and cooldown[classtable.HolyPrism].ready then
         return classtable.HolyPrism
     end
-    --if (CheckSpellCosts(classtable.BeaconofVirtue, 'BeaconofVirtue')) and cooldown[classtable.BeaconofVirtue].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.BeaconofVirtue, 'BeaconofVirtue')) and cooldown[classtable.BeaconofVirtue].ready then
     --    return classtable.BeaconofVirtue
     --end
-    if (CheckSpellCosts(classtable.Consecration, 'Consecration')) and (not buff[classtable.Consecration].up and C_Spell.IsSpellInRange(classtable.CrusaderStrike, 'target')) and cooldown[classtable.Consecration].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (not buff[classtable.Consecration].up and C_Spell.IsSpellInRange(classtable.CrusaderStrike, 'target')) and cooldown[classtable.Consecration].ready then
         return classtable.Consecration
     end
-    if (CheckSpellCosts(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (CheckSpellCosts(classtable.HolyShock, 'HolyShock')) and cooldown[classtable.HolyShock].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HolyShock, 'HolyShock')) and cooldown[classtable.HolyShock].ready then
         return classtable.HolyShock
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.HolyShock].remains >gcd) and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.HolyShock].remains >gcd) and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
 end

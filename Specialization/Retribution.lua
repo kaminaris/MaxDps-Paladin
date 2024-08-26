@@ -73,148 +73,43 @@ local trinket_two_sync
 local trinket_priority
 local ds_castable
 
-local function CheckSpellCosts(spell,spellstring)
-    if not IsSpellKnown(spell) then return false end
-    if not C_Spell.IsSpellUsable(spell) then return false end
-    local costs = C_Spell.GetSpellPowerCost(spell)
-    if type(costs) ~= 'table' and spellstring then return true end
-    for i,costtable in pairs(costs) do
-        if UnitPower('player', costtable.type) < costtable.cost then
-            return false
-        end
-    end
-    return true
-end
-local function MaxGetSpellCost(spell,power)
-    local costs = C_Spell.GetSpellPowerCost(spell)
-    if type(costs) ~= 'table' then return 0 end
-    for i,costtable in pairs(costs) do
-        if costtable.name == power then
-            return costtable.cost
-        end
-    end
-    return 0
-end
-
-
-
-local function CheckTrinketNames(checkName)
-    --if slot == 1 then
-    --    slot = 13
-    --end
-    --if slot == 2 then
-    --    slot = 14
-    --end
-    for i=13,14 do
-        local itemID = GetInventoryItemID('player', i)
-        local itemName = C_Item.GetItemInfo(itemID)
-        if checkName == itemName then
-            return true
-        end
-    end
-    return false
-end
-
-
-local function CheckTrinketCooldown(slot)
-    if slot == 1 then
-        slot = 13
-    end
-    if slot == 2 then
-        slot = 14
-    end
-    if slot == 13 or slot == 14 then
-        local itemID = GetInventoryItemID('player', slot)
-        local _, duration, _ = C_Item.GetItemCooldown(itemID)
-        if duration == 0 then return true else return false end
-    else
-        local tOneitemID = GetInventoryItemID('player', 13)
-        local tTwoitemID = GetInventoryItemID('player', 14)
-        local tOneitemName = C_Item.GetItemInfo(tOneitemID)
-        local tTwoitemName = C_Item.GetItemInfo(tTwoitemID)
-        if tOneitemName == slot then
-            local _, duration, _ = C_Item.GetItemCooldown(tOneitemID)
-            if duration == 0 then return true else return false end
-        end
-        if tTwoitemName == slot then
-            local _, duration, _ = C_Item.GetItemCooldown(tTwoitemID)
-            if duration == 0 then return true else return false end
-        end
-    end
-end
-
-
-
-
-local function CheckPrevSpell(spell)
-    if MaxDps and MaxDps.spellHistory then
-        if MaxDps.spellHistory[1] then
-            if MaxDps.spellHistory[1] == spell then
-                return true
-            end
-            if MaxDps.spellHistory[1] ~= spell then
-                return false
-            end
-        end
-    end
-    return true
-end
-
-
-local function boss()
-    if UnitExists('boss1')
-    or UnitExists('boss2')
-    or UnitExists('boss3')
-    or UnitExists('boss4')
-    or UnitExists('boss5')
-    or UnitExists('boss6')
-    or UnitExists('boss7')
-    or UnitExists('boss8')
-    or UnitExists('boss9')
-    or UnitExists('boss10') then
-        return true
-    end
-    return false
-end
-
-
 function Retribution:precombat()
-    --if (CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and cooldown[classtable.ShieldofVengeance].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.ShieldofVengeance, 'ShieldofVengeance')) and cooldown[classtable.ShieldofVengeance].ready then
     --    return classtable.ShieldofVengeance
     --end
 end
 function Retribution:cooldowns()
-    --if (CheckSpellCosts(classtable.ShieldofVengeance, 'ShieldofVengeance')) and (ttd >15 and ( not talents[classtable.ExecutionSentence] or not debuff[classtable.ExecutionSentenceDeBuff].up )) and cooldown[classtable.ShieldofVengeance].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.ShieldofVengeance, 'ShieldofVengeance')) and (ttd >15 and ( not talents[classtable.ExecutionSentence] or not debuff[classtable.ExecutionSentenceDeBuff].up )) and cooldown[classtable.ShieldofVengeance].ready then
     --    return classtable.ShieldofVengeance
     --end
-    if (CheckSpellCosts(classtable.ExecutionSentence, 'ExecutionSentence')) and (( not buff[classtable.CrusadeBuff].up and cooldown[classtable.Crusade].remains >15 or buff[classtable.CrusadeBuff].count == 10 or cooldown[classtable.AvengingWrath].remains <0.75 or cooldown[classtable.AvengingWrath].remains >15 or talents[classtable.RadiantGlory] ) and ( HolyPower >= 4 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] ) and ( ttd >8 and not talents[classtable.ExecutionersWill] or ttd >12 )) and cooldown[classtable.ExecutionSentence].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ExecutionSentence, 'ExecutionSentence')) and (( not buff[classtable.CrusadeBuff].up and cooldown[classtable.Crusade].remains >15 or buff[classtable.CrusadeBuff].count == 10 or cooldown[classtable.AvengingWrath].remains <0.75 or cooldown[classtable.AvengingWrath].remains >15 or talents[classtable.RadiantGlory] ) and ( HolyPower >= 4 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] ) and ( ttd >8 and not talents[classtable.ExecutionersWill] or ttd >12 )) and cooldown[classtable.ExecutionSentence].ready then
         return classtable.ExecutionSentence
     end
-    if (CheckSpellCosts(classtable.AvengingWrath, 'AvengingWrath')) and (( HolyPower >= 4 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] and ( cooldown[classtable.ExecutionSentence].remains == 0 or cooldown[classtable.FinalReckoning].remains == 0 ) ) and ( not (targets >1) or ttd >10 )) and cooldown[classtable.AvengingWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( HolyPower >= 4 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] and ( cooldown[classtable.ExecutionSentence].remains == 0 or cooldown[classtable.FinalReckoning].remains == 0 ) ) and ( not (targets >1) or ttd >10 )) and cooldown[classtable.AvengingWrath].ready then
         MaxDps:GlowCooldown(classtable.AvengingWrath, cooldown[classtable.AvengingWrath].ready)
     end
-    if (CheckSpellCosts(classtable.Crusade, 'Crusade')) and (HolyPower >= 5 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5) and cooldown[classtable.Crusade].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Crusade, 'Crusade')) and (HolyPower >= 5 and timeInCombat <5 or HolyPower >= 3 and timeInCombat >5) and cooldown[classtable.Crusade].ready then
         return classtable.Crusade
     end
-    if (CheckSpellCosts(classtable.FinalReckoning, 'FinalReckoning')) and (( HolyPower >= 4 and timeInCombat <8 or HolyPower >= 3 and timeInCombat >= 8 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] ) and ( cooldown[classtable.AvengingWrath].remains >10 or cooldown[classtable.Crusade].ready==false and ( not buff[classtable.CrusadeBuff].up or buff[classtable.CrusadeBuff].count >= 10 ) or talents[classtable.RadiantGlory] and ( buff[classtable.AvengingWrathBuff].up or buff[classtable.CrusadeBuff].up ) ) and ( (targets <2) or (targets >1) or math.huge >40 )) and cooldown[classtable.FinalReckoning].ready then
+    if (MaxDps:CheckSpellUsable(classtable.FinalReckoning, 'FinalReckoning')) and (( HolyPower >= 4 and timeInCombat <8 or HolyPower >= 3 and timeInCombat >= 8 or HolyPower >= 2 and talents[classtable.DivineAuxiliary] ) and ( cooldown[classtable.AvengingWrath].remains >10 or cooldown[classtable.Crusade].ready==false and ( not buff[classtable.CrusadeBuff].up or buff[classtable.CrusadeBuff].count >= 10 ) or talents[classtable.RadiantGlory] and ( buff[classtable.AvengingWrathBuff].up or buff[classtable.CrusadeBuff].up ) ) and ( (targets <2) or (targets >1) or math.huge >40 )) and cooldown[classtable.FinalReckoning].ready then
         return classtable.FinalReckoning
     end
 end
 function Retribution:finishers()
     ds_castable = ( targets >= 3 or targets >= 2 and not talents[classtable.DivineArbiter] or buff[classtable.EmpyreanPowerBuff].up ) and not buff[classtable.EmpyreanLegacyBuff].up and not ( buff[classtable.DivineArbiterBuff].up and buff[classtable.DivineArbiterBuff].count >24 )
-    if (CheckSpellCosts(classtable.DivineHammer, 'DivineHammer')) and cooldown[classtable.DivineHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineHammer, 'DivineHammer')) and cooldown[classtable.DivineHammer].ready then
         return classtable.DivineHammer
     end
-    if (CheckSpellCosts(classtable.DivineStorm, 'DivineStorm')) and (ds_castable and ( not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory] )) and cooldown[classtable.DivineStorm].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (ds_castable and ( not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory] )) and cooldown[classtable.DivineStorm].ready then
         return classtable.DivineStorm
     end
-    if (CheckSpellCosts(classtable.JusticarsVengeance, 'JusticarsVengeance')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.JusticarsVengeance].ready then
+    if (MaxDps:CheckSpellUsable(classtable.JusticarsVengeance, 'JusticarsVengeance')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.JusticarsVengeance].ready then
         return classtable.JusticarsVengeance
     end
-    if (CheckSpellCosts(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.TemplarsVerdict].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.TemplarsVerdict].ready then
         return classtable.TemplarsVerdict
     end
-    if (CheckSpellCosts(classtable.FinalVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.FinalVerdict].ready then
+    if (MaxDps:CheckSpellUsable(classtable.FinalVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.FinalVerdict].ready then
         return classtable.FinalVerdict
     end
 end
@@ -225,16 +120,16 @@ function Retribution:generators()
             return Retribution:finishers()
         end
     end
-    if (CheckSpellCosts(classtable.WakeofAshes, 'WakeofAshes')) and (HolyPower <= 2 and ( cooldown[classtable.AvengingWrath].remains >6 or cooldown[classtable.Crusade].remains >6 or talents[classtable.RadiantGlory] ) and ( not talents[classtable.ExecutionSentence] or cooldown[classtable.ExecutionSentence].remains >4 or ttd <8 ) and ( (targets <2) or math.huge >20 or (targets >1) )) and cooldown[classtable.WakeofAshes].ready then
+    if (MaxDps:CheckSpellUsable(classtable.WakeofAshes, 'WakeofAshes')) and (HolyPower <= 2 and ( cooldown[classtable.AvengingWrath].remains >6 or cooldown[classtable.Crusade].remains >6 or talents[classtable.RadiantGlory] ) and ( not talents[classtable.ExecutionSentence] or cooldown[classtable.ExecutionSentence].remains >4 or ttd <8 ) and ( (targets <2) or math.huge >20 or (targets >1) )) and cooldown[classtable.WakeofAshes].ready then
         return classtable.WakeofAshes
     end
-    if (CheckSpellCosts(classtable.BladeofJustice, 'BladeofJustice')) and (not debuff[classtable.ExpurgationDeBuff].up and (MaxDps.tier and MaxDps.tier[31].count >= 2)) and cooldown[classtable.BladeofJustice].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BladeofJustice, 'BladeofJustice')) and (not debuff[classtable.ExpurgationDeBuff].up and (MaxDps.tier and MaxDps.tier[31].count >= 2)) and cooldown[classtable.BladeofJustice].ready then
         return classtable.BladeofJustice
     end
-    if (CheckSpellCosts(classtable.DivineToll, 'DivineToll')) and (HolyPower <= 2 and ( (targets <2) or math.huge >30 or (targets >1) ) and ( cooldown[classtable.AvengingWrath].remains >15 or cooldown[classtable.Crusade].remains >15 or talents[classtable.RadiantGlory] or boss and ttd <8 )) and cooldown[classtable.DivineToll].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineToll, 'DivineToll')) and (HolyPower <= 2 and ( (targets <2) or math.huge >30 or (targets >1) ) and ( cooldown[classtable.AvengingWrath].remains >15 or cooldown[classtable.Crusade].remains >15 or talents[classtable.RadiantGlory] or MaxDps:boss() and ttd <8 )) and cooldown[classtable.DivineToll].ready then
         MaxDps:GlowCooldown(classtable.DivineToll, cooldown[classtable.DivineToll].ready)
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and (debuff[classtable.ExpurgationDeBuff].up and not buff[classtable.EchoesofWrathBuff].up and (MaxDps.tier and MaxDps.tier[31].count >= 2)) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and (debuff[classtable.ExpurgationDeBuff].up and not buff[classtable.EchoesofWrathBuff].up and (MaxDps.tier and MaxDps.tier[31].count >= 2)) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
     if (HolyPower >= 3 and buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10) then
@@ -243,25 +138,25 @@ function Retribution:generators()
             return Retribution:finishers()
         end
     end
-    if (CheckSpellCosts(classtable.TemplarSlash, 'TemplarSlash')) and (buff[classtable.TemplarStrikesBuff].remains <gcd and targets >= 2) and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (buff[classtable.TemplarStrikesBuff].remains <gcd and targets >= 2) and cooldown[classtable.TemplarSlash].ready then
         return classtable.TemplarSlash
     end
-    if (CheckSpellCosts(classtable.BladeofJustice, 'BladeofJustice')) and (( HolyPower <= 3 or not talents[classtable.HolyBlade] ) and ( targets >= 2 and not talents[classtable.CrusadingStrikes] or targets >= 4 )) and cooldown[classtable.BladeofJustice].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BladeofJustice, 'BladeofJustice')) and (( HolyPower <= 3 or not talents[classtable.HolyBlade] ) and ( targets >= 2 and not talents[classtable.CrusadingStrikes] or targets >= 4 )) and cooldown[classtable.BladeofJustice].ready then
         return classtable.BladeofJustice
     end
-    if (CheckSpellCosts(classtable.HammerofWrath, 'HammerofWrath')) and (( targets <2 or not talents[classtable.BlessedChampion] ) and ( HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum] )) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (( targets <2 or not talents[classtable.BlessedChampion] ) and ( HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum] )) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (CheckSpellCosts(classtable.TemplarSlash, 'TemplarSlash')) and (buff[classtable.TemplarStrikesBuff].remains <gcd) and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (buff[classtable.TemplarStrikesBuff].remains <gcd) and cooldown[classtable.TemplarSlash].ready then
         return classtable.TemplarSlash
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and (not debuff[classtable.JudgmentDeBuff].up and ( HolyPower <= 3 or not talents[classtable.BoundlessJudgment] )) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and (not debuff[classtable.JudgmentDeBuff].up and ( HolyPower <= 3 or not talents[classtable.BoundlessJudgment] )) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (CheckSpellCosts(classtable.BladeofJustice, 'BladeofJustice')) and (HolyPower <= 3 or not talents[classtable.HolyBlade]) and cooldown[classtable.BladeofJustice].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BladeofJustice, 'BladeofJustice')) and (HolyPower <= 3 or not talents[classtable.HolyBlade]) and cooldown[classtable.BladeofJustice].ready then
         return classtable.BladeofJustice
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and (HolyPower <= 3 or not talents[classtable.BoundlessJudgment]) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and (HolyPower <= 3 or not talents[classtable.BoundlessJudgment]) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
     if (( targetHP <= 20 or buff[classtable.AvengingWrathBuff].up or buff[classtable.CrusadeBuff].up or buff[classtable.EmpyreanPowerBuff].up )) then
@@ -270,29 +165,29 @@ function Retribution:generators()
             return Retribution:finishers()
         end
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.CrusaderStrike].charges >= 1.75 and ( HolyPower <= 2 or HolyPower <= 3 and cooldown[classtable.BladeofJustice].remains >gcd * 2 or HolyPower == 4 and cooldown[classtable.BladeofJustice].remains >gcd * 2 and cooldown[classtable.Judgment].remains >gcd * 2 )) and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.CrusaderStrike].charges >= 1.75 and ( HolyPower <= 2 or HolyPower <= 3 and cooldown[classtable.BladeofJustice].remains >gcd * 2 or HolyPower == 4 and cooldown[classtable.BladeofJustice].remains >gcd * 2 and cooldown[classtable.Judgment].remains >gcd * 2 )) and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
     local finishersCheck = Retribution:finishers()
     if finishersCheck then
         return finishersCheck
     end
-    if (CheckSpellCosts(classtable.TemplarSlash, 'TemplarSlash')) and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and cooldown[classtable.TemplarSlash].ready then
         return classtable.TemplarSlash
     end
-    if (CheckSpellCosts(classtable.TemplarStrike, 'TemplarStrike')) and cooldown[classtable.TemplarStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarStrike, 'TemplarStrike')) and cooldown[classtable.TemplarStrike].ready then
         return classtable.TemplarStrike
     end
-    if (CheckSpellCosts(classtable.HammerofWrath, 'HammerofWrath')) and (HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum]) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum]) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and not talents[classtable.CrusadingStrikes] and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
 end
 
 function Retribution:callaction()
-    if (CheckSpellCosts(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
         MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
     local cooldownsCheck = Retribution:cooldowns()

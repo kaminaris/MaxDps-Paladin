@@ -69,113 +69,25 @@ local Protection = {}
 
 local trinket_sync_slot
 
-local function CheckSpellCosts(spell,spellstring)
-    if not IsSpellKnown(spell) then return false end
-    if not C_Spell.IsSpellUsable(spell) then return false end
-    local costs = C_Spell.GetSpellPowerCost(spell)
-    if type(costs) ~= 'table' and spellstring then return true end
-    for i,costtable in pairs(costs) do
-        if UnitPower('player', costtable.type) < costtable.cost then
-            return false
-        end
-    end
-    return true
-end
-local function MaxGetSpellCost(spell,power)
-    local costs = C_Spell.GetSpellPowerCost(spell)
-    if type(costs) ~= 'table' then return 0 end
-    for i,costtable in pairs(costs) do
-        if costtable.name == power then
-            return costtable.cost
-        end
-    end
-    return 0
-end
-
-
-
-local function CheckTrinketNames(checkName)
-    --if slot == 1 then
-    --    slot = 13
-    --end
-    --if slot == 2 then
-    --    slot = 14
-    --end
-    for i=13,14 do
-        local itemID = GetInventoryItemID('player', i)
-        local itemName = C_Item.GetItemInfo(itemID)
-        if checkName == itemName then
-            return true
-        end
-    end
-    return false
-end
-
-
-local function CheckTrinketCooldown(slot)
-    if slot == 1 then
-        slot = 13
-    end
-    if slot == 2 then
-        slot = 14
-    end
-    if slot == 13 or slot == 14 then
-        local itemID = GetInventoryItemID('player', slot)
-        local _, duration, _ = C_Item.GetItemCooldown(itemID)
-        if duration == 0 then return true else return false end
-    else
-        local tOneitemID = GetInventoryItemID('player', 13)
-        local tTwoitemID = GetInventoryItemID('player', 14)
-        local tOneitemName = C_Item.GetItemInfo(tOneitemID)
-        local tTwoitemName = C_Item.GetItemInfo(tTwoitemID)
-        if tOneitemName == slot then
-            local _, duration, _ = C_Item.GetItemCooldown(tOneitemID)
-            if duration == 0 then return true else return false end
-        end
-        if tTwoitemName == slot then
-            local _, duration, _ = C_Item.GetItemCooldown(tTwoitemID)
-            if duration == 0 then return true else return false end
-        end
-    end
-end
-
-
-
-
-local function CheckPrevSpell(spell)
-    if MaxDps and MaxDps.spellHistory then
-        if MaxDps.spellHistory[1] then
-            if MaxDps.spellHistory[1] == spell then
-                return true
-            end
-            if MaxDps.spellHistory[1] ~= spell then
-                return false
-            end
-        end
-    end
-    return true
-end
-
-
 function Protection:precombat()
-    if (CheckSpellCosts(classtable.DevotionAura, 'DevotionAura')) and not buff[classtable.DevotionAura].up and cooldown[classtable.DevotionAura].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and not buff[classtable.DevotionAura].up and cooldown[classtable.DevotionAura].ready then
         MaxDps:GlowCooldown(classtable.DevotionAura, cooldown[classtable.DevotionAura].ready)
     end
-    if (CheckSpellCosts(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
         return classtable.Consecration
     end
 end
 function Protection:cooldowns()
-    if (CheckSpellCosts(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
         MaxDps:GlowCooldown(classtable.AvengingWrath, cooldown[classtable.AvengingWrath].ready)
     end
-    if (CheckSpellCosts(classtable.MomentofGlory, 'MomentofGlory')) and (( buff[classtable.AvengingWrathBuff].remains <15 or ( timeInCombat >10 ) )) and cooldown[classtable.MomentofGlory].ready then
+    if (MaxDps:CheckSpellUsable(classtable.MomentofGlory, 'MomentofGlory')) and (( buff[classtable.AvengingWrathBuff].remains <15 or ( timeInCombat >10 ) )) and cooldown[classtable.MomentofGlory].ready then
         MaxDps:GlowCooldown(classtable.MomentofGlory, cooldown[classtable.MomentofGlory].ready)
     end
-    if (CheckSpellCosts(classtable.DivineToll, 'DivineToll')) and (targets >= 3) and cooldown[classtable.DivineToll].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineToll, 'DivineToll')) and (targets >= 3) and cooldown[classtable.DivineToll].ready then
         MaxDps:GlowCooldown(classtable.DivineToll, cooldown[classtable.DivineToll].ready)
     end
-    if (CheckSpellCosts(classtable.BastionofLight, 'BastionofLight')) and (buff[classtable.AvengingWrathBuff].up or cooldown[classtable.AvengingWrath].remains <= 30) and cooldown[classtable.BastionofLight].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BastionofLight, 'BastionofLight')) and (buff[classtable.AvengingWrathBuff].up or cooldown[classtable.AvengingWrath].remains <= 30) and cooldown[classtable.BastionofLight].ready then
         MaxDps:GlowCooldown(classtable.BastionofLight, cooldown[classtable.BastionofLight].ready)
     end
 end
@@ -186,102 +98,102 @@ function Protection:standard()
             return Protection:hammer_of_light()
         end
     end
-    if (CheckSpellCosts(classtable.HammerofLight, 'HammerofLight')) and (( not talents[classtable.Redoubt] or buff[classtable.RedoubtBuff].count == 3 ) and ( buff[classtable.BlessingofDawnBuff].count >= 1 or not talents[classtable.OfDuskandDawn] )) and cooldown[classtable.HammerofLight].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofLight, 'HammerofLight')) and (( not talents[classtable.Redoubt] or buff[classtable.RedoubtBuff].count == 3 ) and ( buff[classtable.BlessingofDawnBuff].count >= 1 or not talents[classtable.OfDuskandDawn] )) and cooldown[classtable.HammerofLight].ready then
         return classtable.HammerofLight
     end
-    if (CheckSpellCosts(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and (( ( HolyPower >2 ) or buff[classtable.BastionofLightBuff].up or buff[classtable.DivinePurposeBuff].up ) and not buff[classtable.HammerofLightReadyBuff].up) and cooldown[classtable.ShieldoftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and (( ( HolyPower >2 ) or buff[classtable.BastionofLightBuff].up or buff[classtable.DivinePurposeBuff].up ) and not buff[classtable.HammerofLightReadyBuff].up) and cooldown[classtable.ShieldoftheRighteous].ready then
         return classtable.ShieldoftheRighteous
     end
-    if (CheckSpellCosts(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.SacredWeapon and ( not buff[classtable.SacredWeaponBuff].up or ( buff[classtable.SacredWeaponBuff].remains <6 and not buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains <= 30 ) )) and cooldown[classtable.HolyArmaments].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.SacredWeapon and ( not buff[classtable.SacredWeaponBuff].up or ( buff[classtable.SacredWeaponBuff].remains <6 and not buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains <= 30 ) )) and cooldown[classtable.HolyArmaments].ready then
         return classtable.HolyArmaments
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and (targets >3 and buff[classtable.BulwarkofRighteousFuryBuff].count >= 3 and HolyPower <3) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and (targets >3 and buff[classtable.BulwarkofRighteousFuryBuff].count >= 3 and HolyPower <3) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (CheckSpellCosts(classtable.AvengersShield, 'AvengersShield')) and (not buff[classtable.BulwarkofRighteousFuryBuff].up and talents[classtable.BulwarkofRighteousFury] and targets >= 3) and cooldown[classtable.AvengersShield].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and (not buff[classtable.BulwarkofRighteousFuryBuff].up and talents[classtable.BulwarkofRighteousFury] and targets >= 3) and cooldown[classtable.AvengersShield].ready then
         return classtable.AvengersShield
     end
-    if (CheckSpellCosts(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and (cooldown[classtable.Judgment].charges >= 2 or cooldown[classtable.Judgment].fullRecharge <= gcd) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and (cooldown[classtable.Judgment].charges >= 2 or cooldown[classtable.Judgment].fullRecharge <= gcd) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (CheckSpellCosts(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.HolyBulwark and cooldown[classtable.HolyArmaments].charges == 2) and cooldown[classtable.HolyArmaments].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.HolyBulwark and cooldown[classtable.HolyArmaments].charges == 2) and cooldown[classtable.HolyArmaments].ready then
         return classtable.HolyArmaments
     end
-    if (CheckSpellCosts(classtable.DivineToll, 'DivineToll')) and (( (targets <2) or math.huge >10 )) and cooldown[classtable.DivineToll].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineToll, 'DivineToll')) and (( (targets <2) or math.huge >10 )) and cooldown[classtable.DivineToll].ready then
         MaxDps:GlowCooldown(classtable.DivineToll, cooldown[classtable.DivineToll].ready)
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (CheckSpellCosts(classtable.AvengersShield, 'AvengersShield')) and (not talents[classtable.LightsGuidance]) and cooldown[classtable.AvengersShield].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and (not talents[classtable.LightsGuidance]) and cooldown[classtable.AvengersShield].ready then
         return classtable.AvengersShield
     end
-    if (CheckSpellCosts(classtable.Consecration, 'Consecration')) and (not buff[classtable.Consecration].up) and cooldown[classtable.Consecration].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (not buff[classtable.Consecration].up) and cooldown[classtable.Consecration].ready then
         return classtable.Consecration
     end
-    if (CheckSpellCosts(classtable.EyeofTyr, 'EyeofTyr')) and (( talents[classtable.InmostLight] and math.huge >= 45 or targets >= 3 ) and not talents[classtable.LightsDeliverance]) and cooldown[classtable.EyeofTyr].ready then
+    if (MaxDps:CheckSpellUsable(classtable.EyeofTyr, 'EyeofTyr')) and (( talents[classtable.InmostLight] and math.huge >= 45 or targets >= 3 ) and not talents[classtable.LightsDeliverance]) and cooldown[classtable.EyeofTyr].ready then
         MaxDps:GlowCooldown(classtable.EyeofTyr, cooldown[classtable.EyeofTyr].ready)
     end
-    if (CheckSpellCosts(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.HolyBulwark) and cooldown[classtable.HolyArmaments].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.HolyBulwark) and cooldown[classtable.HolyArmaments].ready then
         return classtable.HolyArmaments
     end
-    if (CheckSpellCosts(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
         return classtable.BlessedHammer
     end
-    if (CheckSpellCosts(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
         return classtable.HammeroftheRighteous
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
-    --if (CheckSpellCosts(classtable.WordofGlory, 'WordofGlory')) and (buff[classtable.ShiningLightFreeBuff].up and talents[classtable.LightsGuidance]) and cooldown[classtable.WordofGlory].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (buff[classtable.ShiningLightFreeBuff].up and talents[classtable.LightsGuidance]) and cooldown[classtable.WordofGlory].ready then
     --    return classtable.WordofGlory
     --end
-    if (CheckSpellCosts(classtable.AvengersShield, 'AvengersShield')) and cooldown[classtable.AvengersShield].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and cooldown[classtable.AvengersShield].ready then
         return classtable.AvengersShield
     end
-    if (CheckSpellCosts(classtable.EyeofTyr, 'EyeofTyr')) and (not talents[classtable.LightsDeliverance]) and cooldown[classtable.EyeofTyr].ready then
+    if (MaxDps:CheckSpellUsable(classtable.EyeofTyr, 'EyeofTyr')) and (not talents[classtable.LightsDeliverance]) and cooldown[classtable.EyeofTyr].ready then
         MaxDps:GlowCooldown(classtable.EyeofTyr, cooldown[classtable.EyeofTyr].ready)
     end
-    --if (CheckSpellCosts(classtable.WordofGlory, 'WordofGlory')) and (buff[classtable.ShiningLightFreeBuff].up) and cooldown[classtable.WordofGlory].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (buff[classtable.ShiningLightFreeBuff].up) and cooldown[classtable.WordofGlory].ready then
     --    return classtable.WordofGlory
     --end
-    if (CheckSpellCosts(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
         return classtable.Consecration
     end
 end
 function Protection:hammer_of_light()
-    if (CheckSpellCosts(classtable.HammerofLight, 'HammerofLight')) and (buff[classtable.BlessingofDawnBuff].count >0 or targets >= 5) and cooldown[classtable.HammerofLight].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofLight, 'HammerofLight')) and (buff[classtable.BlessingofDawnBuff].count >0 or targets >= 5) and cooldown[classtable.HammerofLight].ready then
         return classtable.HammerofLight
     end
-    if (CheckSpellCosts(classtable.EyeofTyr, 'EyeofTyr')) and cooldown[classtable.EyeofTyr].ready then
+    if (MaxDps:CheckSpellUsable(classtable.EyeofTyr, 'EyeofTyr')) and cooldown[classtable.EyeofTyr].ready then
         MaxDps:GlowCooldown(classtable.EyeofTyr, cooldown[classtable.EyeofTyr].ready)
     end
-    if (CheckSpellCosts(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and cooldown[classtable.ShieldoftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and cooldown[classtable.ShieldoftheRighteous].ready then
         return classtable.ShieldoftheRighteous
     end
-    if (CheckSpellCosts(classtable.EyeofTyr, 'EyeofTyr')) and (buff[classtable.BlessingofDawnBuff].count >0) and cooldown[classtable.EyeofTyr].ready then
+    if (MaxDps:CheckSpellUsable(classtable.EyeofTyr, 'EyeofTyr')) and (buff[classtable.BlessingofDawnBuff].count >0) and cooldown[classtable.EyeofTyr].ready then
         MaxDps:GlowCooldown(classtable.EyeofTyr, cooldown[classtable.EyeofTyr].ready)
     end
-    if (CheckSpellCosts(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (CheckSpellCosts(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (CheckSpellCosts(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
         return classtable.BlessedHammer
     end
-    if (CheckSpellCosts(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
         return classtable.HammeroftheRighteous
     end
-    if (CheckSpellCosts(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
         return classtable.CrusaderStrike
     end
-    if (CheckSpellCosts(classtable.DivineToll, 'DivineToll')) and cooldown[classtable.DivineToll].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineToll, 'DivineToll')) and cooldown[classtable.DivineToll].ready then
         MaxDps:GlowCooldown(classtable.DivineToll, cooldown[classtable.DivineToll].ready)
     end
 end
@@ -289,7 +201,7 @@ function Protection:trinkets()
 end
 
 function Protection:callaction()
-    if (CheckSpellCosts(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
         MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
     local cooldownsCheck = Protection:cooldowns()
