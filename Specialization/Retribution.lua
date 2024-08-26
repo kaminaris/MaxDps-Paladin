@@ -103,13 +103,13 @@ function Retribution:finishers()
     if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (ds_castable and ( not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory] )) and cooldown[classtable.DivineStorm].ready then
         return classtable.DivineStorm
     end
-    if (MaxDps:CheckSpellUsable(classtable.JusticarsVengeance, 'JusticarsVengeance')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.JusticarsVengeance].ready then
+    if (MaxDps:FindSpell(classtable.JusticarsVengeance) and MaxDps:CheckSpellUsable(classtable.JusticarsVengeance, 'JusticarsVengeance')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.JusticarsVengeance].ready then
         return classtable.JusticarsVengeance
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.TemplarsVerdict].ready then
+    if (MaxDps:FindSpell(classtable.TemplarsVerdict) and MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.TemplarsVerdict].ready then
         return classtable.TemplarsVerdict
     end
-    if (MaxDps:CheckSpellUsable(classtable.FinalVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.FinalVerdict].ready then
+    if (MaxDps:FindSpell(classtable.FinalVerdict) and MaxDps:CheckSpellUsable(classtable.FinalVerdict, 'TemplarsVerdict')) and (not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory]) and cooldown[classtable.FinalVerdict].ready then
         return classtable.FinalVerdict
     end
 end
