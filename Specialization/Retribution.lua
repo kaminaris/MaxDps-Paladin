@@ -253,6 +253,7 @@ function Paladin:Retribution()
     classtable.TemplarSlash = 406647
     classtable.TemplarStrike = 407480
     classtable.FinalVerdictBuff = 383329
+    classtable.HammerofLight = 427453
     for spellId in pairs(MaxDps.Flags) do
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
