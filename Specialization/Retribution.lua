@@ -100,6 +100,9 @@ function Retribution:finishers()
     if (MaxDps:CheckSpellUsable(classtable.DivineHammer, 'DivineHammer')) and cooldown[classtable.DivineHammer].ready then
         return classtable.DivineHammer
     end
+    if (MaxDps:CheckSpellUsable(classtable.HammerofLight, 'HammerofLight')) and cooldown[classtable.HammerofLight].ready then
+        return classtable.HammerofLight
+    end
     if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (ds_castable and ( not talents[classtable.Crusade] or cooldown[classtable.Crusade].remains >gcd * 3 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count <10 or talents[classtable.RadiantGlory] )) and cooldown[classtable.DivineStorm].ready then
         return classtable.DivineStorm
     end
@@ -138,7 +141,7 @@ function Retribution:generators()
             return Retribution:finishers()
         end
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (buff[classtable.TemplarStrikesBuff].remains <gcd and targets >= 2) and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (MaxDps:FindSpell(classtable.TemplarSlash) and buff[classtable.TemplarStrikesBuff].remains <gcd and targets >= 2) and cooldown[classtable.TemplarSlash].ready then
         return classtable.TemplarSlash
     end
     if (MaxDps:CheckSpellUsable(classtable.BladeofJustice, 'BladeofJustice')) and (( HolyPower <= 3 or not talents[classtable.HolyBlade] ) and ( targets >= 2 and not talents[classtable.CrusadingStrikes] or targets >= 4 )) and cooldown[classtable.BladeofJustice].ready then
@@ -147,7 +150,7 @@ function Retribution:generators()
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (( targets <2 or not talents[classtable.BlessedChampion] ) and ( HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum] )) and cooldown[classtable.HammerofWrath].ready then
         return classtable.HammerofWrath
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (buff[classtable.TemplarStrikesBuff].remains <gcd) and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (MaxDps:FindSpell(classtable.TemplarSlash) and buff[classtable.TemplarStrikesBuff].remains <gcd) and cooldown[classtable.TemplarSlash].ready then
         return classtable.TemplarSlash
     end
     if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and (not debuff[classtable.JudgmentDeBuff].up and ( HolyPower <= 3 or not talents[classtable.BoundlessJudgment] )) and cooldown[classtable.Judgment].ready then
@@ -172,10 +175,10 @@ function Retribution:generators()
     if finishersCheck then
         return finishersCheck
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (MaxDps:FindSpell(classtable.TemplarSlash)) and cooldown[classtable.TemplarSlash].ready then
         return classtable.TemplarSlash
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarStrike, 'TemplarStrike')) and cooldown[classtable.TemplarStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarStrike, 'TemplarStrike')) and (MaxDps:FindSpell(classtable.TemplarStrike)) and cooldown[classtable.TemplarStrike].ready then
         return classtable.TemplarStrike
     end
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (HolyPower <= 3 or targetHP >20 or not talents[classtable.VanguardsMomentum]) and cooldown[classtable.HammerofWrath].ready then
