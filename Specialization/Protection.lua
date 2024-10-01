@@ -73,9 +73,9 @@ function Protection:precombat()
     if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and not buff[classtable.DevotionAura].up and cooldown[classtable.DevotionAura].ready then
         MaxDps:GlowCooldown(classtable.DevotionAura, cooldown[classtable.DevotionAura].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
-        return classtable.Consecration
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
+    --    return classtable.Consecration
+    --end
 end
 function Protection:cooldowns()
     if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
@@ -131,7 +131,7 @@ function Protection:standard()
     if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and (not talents[classtable.LightsGuidance]) and cooldown[classtable.AvengersShield].ready then
         return classtable.AvengersShield
     end
-    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (not buff[classtable.Consecration].up) and cooldown[classtable.Consecration].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (not buff[classtable.ConsecrationBuff].up) and cooldown[classtable.Consecration].ready then
         return classtable.Consecration
     end
     if (MaxDps:CheckSpellUsable(classtable.EyeofTyr, 'EyeofTyr')) and (( talents[classtable.InmostLight] and math.huge >= 45 or targets >= 3 ) and not talents[classtable.LightsDeliverance]) and cooldown[classtable.EyeofTyr].ready then
@@ -270,6 +270,7 @@ function Paladin:Protection()
     classtable.SacredWeaponBuff = 0
     classtable.BulwarkofRighteousFuryBuff = 386652
     classtable.ShiningLightFreeBuff = 0
+    classtable.ConsecrationBuff = 188370
 
     local precombatCheck = Protection:precombat()
     if precombatCheck then
