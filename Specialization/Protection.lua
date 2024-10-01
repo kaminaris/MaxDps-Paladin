@@ -140,10 +140,10 @@ function Protection:standard()
     if (MaxDps:CheckSpellUsable(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.HolyBulwark) and cooldown[classtable.HolyArmaments].ready then
         return classtable.HolyArmaments
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and talents[classtable.BlessedHammer] and cooldown[classtable.BlessedHammer].ready then
         return classtable.BlessedHammer
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and talents[classtable.HammeroftheRighteous] and cooldown[classtable.HammeroftheRighteous].ready then
         return classtable.HammeroftheRighteous
     end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
@@ -184,10 +184,10 @@ function Protection:hammer_of_light()
     if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
         return classtable.Judgment
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and talents[classtable.BlessedHammer] and cooldown[classtable.BlessedHammer].ready then
         return classtable.BlessedHammer
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and talents[classtable.HammeroftheRighteous] and cooldown[classtable.HammeroftheRighteous].ready then
         return classtable.HammeroftheRighteous
     end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
