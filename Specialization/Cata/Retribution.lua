@@ -71,7 +71,7 @@ local function ClearCDs()
 end
 
 function Retribution:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and cooldown[classtable.SealofTruth].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not buff[classtable.SealofTruth].up) and cooldown[classtable.SealofTruth].ready then
         if not setSpell then setSpell = classtable.SealofTruth end
     end
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (not buff[classtable.JudgementsofthePureBuff].up) and cooldown[classtable.Judgement].ready then
@@ -104,18 +104,18 @@ function Retribution:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (buff[classtable.TheArtofWarBuff].up) and cooldown[classtable.Exorcism].ready then
         if not setSpell then setSpell = classtable.Exorcism end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (targethealthPerc <21) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and ((MaxDps.tier and MaxDps.tier[13].count >= 2) and buff[classtable.ZealotryBuff].up and HolyPower <3) and cooldown[classtable.Judgement].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and buff[classtable.ZealotryBuff].up and HolyPower <3 and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
     if (MaxDps:CheckSpellUsable(classtable.HolyWrath, 'HolyWrath')) and cooldown[classtable.HolyWrath].ready then
         if not setSpell then setSpell = classtable.HolyWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (mana >16000) and cooldown[classtable.Consecration].ready then
-        if not setSpell then setSpell = classtable.Consecration end
-    end
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (Mana > 780) and (cooldown[classtable.Consecration] and cooldown[classtable.Consecration].ready) then
+		if not setSpell then setSpell = classtable.Consecration end
+	end
     if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and cooldown[classtable.DivinePlea].ready then
         if not setSpell then setSpell = classtable.DivinePlea end
     end
@@ -159,6 +159,9 @@ function Paladin:Retribution()
     classtable.InquisitionBuff = 0
     classtable.DivinePurposeBuff = 0
     classtable.TheArtofWarBuff = 0
+	classtable.Judgement = 20271
+	classtable.TemplarsVerdict = 85256
+	classtable.Consecration = 26573
     setSpell = nil
     ClearCDs()
 
