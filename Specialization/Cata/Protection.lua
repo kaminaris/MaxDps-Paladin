@@ -311,9 +311,9 @@ function Paladin:Protection()
     end
 
 
-    if MaxDps.db.global.debugMode then
-        debugg()
-    end
+    --if MaxDps.db.global.debugMode then
+    --   debugg()
+    --end
 
     setSpell = nil
     ClearCDs()
