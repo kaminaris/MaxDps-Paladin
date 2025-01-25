@@ -311,6 +311,10 @@ function Paladin:Protection()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+    classtable.RighteousFuryBuff = 25780
+    classtable.InquisitionBuff = 84963
+    classtable.ArdentDefenderBuff = 31850
+    classtable.GuardianofAncientKingsBuff = 86669
     classtable.RighteousFury = 25780
     classtable.RetributionAura = 7294
     classtable.ConcentrationAura = 19746

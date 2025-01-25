@@ -300,6 +300,15 @@ function Paladin:Retribution()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+    classtable.SealofRighteousnessBuff = 20154
+    classtable.JudgementsofthePureBuff = 53657
+    classtable.ZealotryBuff = 85696
+    classtable.InquisitionBuff = 84963
+    classtable.SelflessBuff = 90811
+    classtable.DivinePurposeBuff = 90174
+    classtable.TheArtofWarBuff = 59578
+    classtable.JudgementsoftheBoldBuff = 89906
+    classtable.GuardianofAncientKingsBuff = 86669
     classtable.Zealotry = 85696
     classtable.RetributionAura = 7294
     classtable.ConcentrationAura = 19746
