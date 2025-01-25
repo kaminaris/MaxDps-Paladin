@@ -61,35 +61,66 @@ local Mana
 local ManaMax
 local ManaDeficit
 local HolyPowerDeficit
+local ManaPerc
 
 local Retribution = {}
 
+
+
+local function time_to_generate_holy_power()
+    local needed_holy_power = function()
+        if HolyPower > 0 then
+            return 3 + 3 - HolyPower
+        else
+            return 3
+        end
+    end
+    return needed_holy_power() * cooldown[classtable.CrusaderStrike].duration
+end
+
+local function time_until_zealotry()
+    local time_until_zealotryc = cooldown[classtable.Zealotry].remains
+    if buff[classtable.GuardianofAncientKingsBuff].up and not buff[classtable.ZealotryBuff].up then
+        time_until_zealotryc = buff[classtable.GuardianofAncientKingsBuff].remains - 20
+    end
+    return time_until_zealotryc
+end
+
+local function can_spend_holy_power()
+    if time_to_generate_holy_power() <= time_until_zealotry() then
+        return true
+    else
+        return false
+    end
+end
+
+
 function Retribution:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.RetributionAura, 'RetributionAura')) and (not buff[classtable.AuraBuff].up and false and assigned_aura.retribution_aura) and cooldown[classtable.RetributionAura].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.RetributionAura, 'RetributionAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.RetributionAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.RetributionAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ConcentrationAura, 'ConcentrationAura')) and (not buff[classtable.AuraBuff].up and false and assigned_aura.concentration_aura) and cooldown[classtable.ConcentrationAura].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.ConcentrationAura, 'ConcentrationAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.ConcentrationAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.ConcentrationAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderAura, 'CrusaderAura')) and (not buff[classtable.AuraBuff].up and false and assigned_aura.crusader_aura) and cooldown[classtable.CrusaderAura].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderAura, 'CrusaderAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.CrusaderAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.CrusaderAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.AuraBuff].up and false and assigned_aura.devotion_aura) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DevotionAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ResistanceAura, 'ResistanceAura')) and (not buff[classtable.AuraBuff].up and false and assigned_aura.resistance_aura) and cooldown[classtable.ResistanceAura].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.ResistanceAura, 'ResistanceAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.ResistanceAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.ResistanceAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not buff[classtable.BlessingBuff].up and false and assigned_blessing.blessing_of_kings) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.BlessingofKings end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not buff[classtable.BlessingBuff].up and false and assigned_blessing.blessing_of_might) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.BlessingofMight end
     end
     if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (buff[classtable.SealBuff].remains <300) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SealofTruth end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (mana.percent <90) and cooldown[classtable.DivinePlea].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (ManaPerc <90) and cooldown[classtable.DivinePlea].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DivinePlea end
     end
     if (MaxDps:CheckSpellUsable(classtable.GuardianofAncientKings, 'GuardianofAncientKings')) and (cooldown[classtable.Zealotry].remains <= 10 or cooldown[classtable.Zealotry].remains >= ttd) and cooldown[classtable.GuardianofAncientKings].ready and not UnitAffectingCombat('player') then
@@ -112,19 +143,16 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.GuardianofAncientKings, 'GuardianofAncientKings')) and (cooldown[classtable.Zealotry].remains <= 10 or cooldown[classtable.Zealotry].remains >= ttd) and cooldown[classtable.GuardianofAncientKings].ready then
         if not setSpell then setSpell = classtable.GuardianofAncientKings end
     end
-    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( ( buff[classtable.ZealotryBuff].up and not false ) or not talents[classtable.Zealotry] ) and buff[classtable.InquisitionBuff].up) and cooldown[classtable.AvengingWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( ( buff[classtable.ZealotryBuff].up and not false ) or not (talents[classtable.Zealotry] and true or false) ) and buff[classtable.InquisitionBuff].up) and cooldown[classtable.AvengingWrath].ready then
         if not setSpell then setSpell = classtable.AvengingWrath end
     end
     if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and cooldown[classtable.Zealotry].ready then
         if not setSpell then setSpell = classtable.Zealotry end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (buff[classtable.InquisitionBuff].remains <= 3.5 and not cooldown[classtable.Zealotry].ready and cooldown[classtable.Zealotry].ready==false and ttd >6) and cooldown[classtable.Inquisition].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (buff[classtable.InquisitionBuff].remains <= 3.5 and not cooldown[classtable.Zealotry].ready and cooldown[classtable.Zealotry].remains and ttd >6) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SynapseSprings, 'SynapseSprings')) and (cooldown[classtable.AvengingWrath].remains >= 35) and cooldown[classtable.SynapseSprings].ready then
-        if not setSpell then setSpell = classtable.SynapseSprings end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (not buff[classtable.SelflessBuff].up and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and false and ( can_spend_holy_power or not false )) and cooldown[classtable.WordofGlory].ready then
+    if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (not buff[classtable.SelflessBuff].up and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and false and ( can_spend_holy_power() or not false )) and cooldown[classtable.WordofGlory].ready then
         if not setSpell then setSpell = classtable.WordofGlory end
     end
     if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (HolyPower >= 3 or buff[classtable.DivinePurposeBuff].up and cooldown[classtable.CrusaderStrike].remains) and cooldown[classtable.TemplarsVerdict].ready then
@@ -136,22 +164,22 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and ((MaxDps.tier and MaxDps.tier[13].count >= 2) and not buff[classtable.ZealotryBuff].up and HolyPower <3) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (( cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust() ) and buff[classtable.TheArtofWarBuff].up) and cooldown[classtable.Exorcism].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (( cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust(1) ) and buff[classtable.TheArtofWarBuff].up) and cooldown[classtable.Exorcism].ready then
         if not setSpell then setSpell = classtable.Exorcism end
     end
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust()) and cooldown[classtable.Judgement].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust(1)) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HolyWrath, 'HolyWrath')) and (cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust()) and cooldown[classtable.HolyWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HolyWrath, 'HolyWrath')) and (cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust(1)) and cooldown[classtable.HolyWrath].ready then
         if not setSpell then setSpell = classtable.HolyWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (( false or not (GetUnitSpeed('player') >0) ) and false and ( cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust() ) and mana.current >= 16000) and cooldown[classtable.Consecration].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (( false or not (GetUnitSpeed('player') >0) ) and false and ( cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust(1) ) and Mana >= 16000) and cooldown[classtable.Consecration].ready then
         if not setSpell then setSpell = classtable.Consecration end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (mana.percent <false) and cooldown[classtable.DivinePlea].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (ManaPerc <75) and cooldown[classtable.DivinePlea].ready then
         if not setSpell then setSpell = classtable.DivinePlea end
     end
 end
@@ -159,10 +187,10 @@ function Retribution:cleave()
     if (MaxDps:CheckSpellUsable(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
         MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
-    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (not buff[classtable.SealofRighteousnessBuff].up and targets >= false) and cooldown[classtable.SealofRighteousness].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (not buff[classtable.SealofRighteousnessBuff].up and targets >= 4) and cooldown[classtable.SealofRighteousness].ready then
         if not setSpell then setSpell = classtable.SealofRighteousness end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (( mana.percent <false ) and not buff[classtable.JudgementsoftheBoldBuff].up) and cooldown[classtable.Judgement].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (( ManaPerc <50 ) and not buff[classtable.JudgementsoftheBoldBuff].up) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
     if (MaxDps:CheckSpellUsable(classtable.GuardianofAncientKings, 'GuardianofAncientKings')) and (cooldown[classtable.Zealotry].remains <10) and cooldown[classtable.GuardianofAncientKings].ready then
@@ -174,19 +202,19 @@ function Retribution:cleave()
     if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and (( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and UnitLevel('player') <85) and cooldown[classtable.Zealotry].ready then
         if not setSpell then setSpell = classtable.Zealotry end
     end
-    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( buff[classtable.ZealotryBuff].up and not false ) or not talents[classtable.Zealotry]) and cooldown[classtable.AvengingWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( buff[classtable.ZealotryBuff].up and not false ) or not (talents[classtable.Zealotry] and true or false)) and cooldown[classtable.AvengingWrath].ready then
         if not setSpell then setSpell = classtable.AvengingWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (mana.percent <false and not buff[classtable.JudgementsoftheBoldBuff].up) and cooldown[classtable.Judgement].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (ManaPerc <50 and not buff[classtable.JudgementsoftheBoldBuff].up) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (targets >= false) and cooldown[classtable.DivineStorm].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (targets >= 8) and cooldown[classtable.DivineStorm].ready then
         if not setSpell then setSpell = classtable.DivineStorm end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or ( time_to_three_holy_power * 0.66 ) >buff[classtable.InquisitionBuff].remains ) and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and ( can_spend_holy_power or not false )) and cooldown[classtable.Inquisition].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or ( 3 * cooldown[classtable.CrusaderStrike].duration * 0.66 ) >buff[classtable.InquisitionBuff].remains ) and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and ( can_spend_holy_power() or not false )) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
-    if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (not buff[classtable.SelflessBuff].up and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and false and ( can_spend_holy_power or not false )) and cooldown[classtable.WordofGlory].ready then
+    if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (not buff[classtable.SelflessBuff].up and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and false and ( can_spend_holy_power() or not false )) and cooldown[classtable.WordofGlory].ready then
         if not setSpell then setSpell = classtable.WordofGlory end
     end
     if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (HolyPower <3 and targets >= 4) and cooldown[classtable.DivineStorm].ready then
@@ -198,7 +226,7 @@ function Retribution:cleave()
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (HolyPower <3 and targets <4) and cooldown[classtable.CrusaderStrike].ready then
         if not setSpell then setSpell = classtable.CrusaderStrike end
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (( buff[classtable.DivinePurposeBuff].up or HolyPower == 3 ) and ( can_spend_holy_power or not false )) and cooldown[classtable.TemplarsVerdict].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (( buff[classtable.DivinePurposeBuff].up or HolyPower == 3 ) and ( can_spend_holy_power() or not false )) and cooldown[classtable.TemplarsVerdict].ready then
         if not setSpell then setSpell = classtable.TemplarsVerdict end
     end
     if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (( false or not (GetUnitSpeed('player') >0) ) and not buff[classtable.ActiveConsecrationBuff].up and targets >2) and cooldown[classtable.Consecration].ready then
@@ -222,7 +250,7 @@ function Retribution:cleave()
     if (MaxDps:CheckSpellUsable(classtable.HolyWrath, 'HolyWrath')) and cooldown[classtable.HolyWrath].ready then
         if not setSpell then setSpell = classtable.HolyWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (mana.percent <false) and cooldown[classtable.DivinePlea].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (ManaPerc <75) and cooldown[classtable.DivinePlea].ready then
         if not setSpell then setSpell = classtable.DivinePlea end
     end
 end
@@ -264,6 +292,7 @@ function Paladin:Retribution()
     HolyPower = UnitPower('player', HolyPowerPT)
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
+    ManaPerc = (Mana / ManaMax) * 100
     classtable.TemplarSlash = 406647
     classtable.TemplarStrike = 407480
     classtable.FinalVerdictBuff = 383329
@@ -271,36 +300,29 @@ function Paladin:Retribution()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.AuraBuff = 0
-    classtable.BlessingBuff = 0
-    classtable.SealBuff = 0
-    classtable.SealofRighteousnessBuff = 0
-    classtable.JudgementsofthePureBuff = 0
-    classtable.ZealotryBuff = 85696
-    classtable.InquisitionBuff = 84963
-    classtable.SelflessBuff = 90811
-    classtable.DivinePurposeBuff = 90174
-    classtable.bloodlust = 0
-    classtable.TheArtofWarBuff = 0
-    classtable.JudgementsoftheBoldBuff = 0
-    classtable.GuardianofAncientKingsBuff = 0
-    classtable.ActiveConsecrationBuff = 0
+    classtable.Zealotry = 85696
     classtable.RetributionAura = 7294
     classtable.ConcentrationAura = 19746
     classtable.CrusaderAura = 32223
     classtable.DevotionAura = 465
     classtable.ResistanceAura = 19891
+    classtable.BlessingofKings = 20217
+    classtable.BlessingofMight = 19740
+    classtable.SealofTruth = 31801
     classtable.DivinePlea = 54428
-    classtable.Zealotry = 85696
+    classtable.GuardianofAncientKings = 86150
     classtable.Judgement = 20271
     classtable.Rebuke = 96231
     classtable.AvengingWrath = 31884
     classtable.Inquisition = 84963
+    classtable.WordofGlory = 85673
     classtable.TemplarsVerdict = 85256
     classtable.CrusaderStrike = 35395
     classtable.Exorcism = 879
+    classtable.HammerofWrath = 24275
     classtable.HolyWrath = 2812
     classtable.Consecration = 26573
+    classtable.SealofRighteousness = 20154
     classtable.DivineStorm = 53385
 
     local function debugg()
