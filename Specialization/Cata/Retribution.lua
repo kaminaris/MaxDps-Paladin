@@ -149,13 +149,13 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and cooldown[classtable.Zealotry].ready then
         if not setSpell then setSpell = classtable.Zealotry end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (buff[classtable.InquisitionBuff].remains <= 3.5 and not cooldown[classtable.Zealotry].ready and cooldown[classtable.Zealotry].remains and ttd >6) and cooldown[classtable.Inquisition].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (buff[classtable.InquisitionBuff].remains <= 3.5 and not cooldown[classtable.Zealotry].ready and not cooldown[classtable.Zealotry].ready and ttd >6) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
     if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (not buff[classtable.SelflessBuff].up and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and false and ( can_spend_holy_power() or not false )) and cooldown[classtable.WordofGlory].ready then
         if not setSpell then setSpell = classtable.WordofGlory end
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (HolyPower >= 3 or buff[classtable.DivinePurposeBuff].up and cooldown[classtable.CrusaderStrike].remains) and cooldown[classtable.TemplarsVerdict].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (HolyPower >= 3 or buff[classtable.DivinePurposeBuff].up and not cooldown[classtable.CrusaderStrike].ready) and cooldown[classtable.TemplarsVerdict].ready then
         if not setSpell then setSpell = classtable.TemplarsVerdict end
     end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (HolyPower <3) and cooldown[classtable.CrusaderStrike].ready then
