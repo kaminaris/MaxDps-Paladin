@@ -146,7 +146,7 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( ( buff[classtable.ZealotryBuff].up and not false ) or not (talents[classtable.Zealotry] and true or false) ) and buff[classtable.InquisitionBuff].up) and cooldown[classtable.AvengingWrath].ready then
         if not setSpell then setSpell = classtable.AvengingWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and cooldown[classtable.Zealotry].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and ( HolyPower >= 3 or buff[classtable.DivinePurposeBuff].up ) and cooldown[classtable.Zealotry].ready then
         if not setSpell then setSpell = classtable.Zealotry end
     end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (buff[classtable.InquisitionBuff].remains <= 3.5 and not cooldown[classtable.Zealotry].ready and not cooldown[classtable.Zealotry].ready and ttd >6) and cooldown[classtable.Inquisition].ready then
@@ -167,7 +167,7 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (( cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust(1) ) and buff[classtable.TheArtofWarBuff].up) and cooldown[classtable.Exorcism].ready then
         if not setSpell then setSpell = classtable.Exorcism end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (targethealthPerc <= 20) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (cooldown[classtable.CrusaderStrike].remains >= 1 or not MaxDps:Bloodlust(1)) and cooldown[classtable.Judgement].ready then
@@ -196,10 +196,10 @@ function Retribution:cleave()
     if (MaxDps:CheckSpellUsable(classtable.GuardianofAncientKings, 'GuardianofAncientKings')) and (cooldown[classtable.Zealotry].remains <10) and cooldown[classtable.GuardianofAncientKings].ready then
         if not setSpell then setSpell = classtable.GuardianofAncientKings end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and (buff[classtable.GuardianofAncientKingsBuff].remains <21 and ( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and UnitLevel('player') == 85) and cooldown[classtable.Zealotry].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and (buff[classtable.GuardianofAncientKingsBuff].remains <21 and ( HolyPower >= 3 or buff[classtable.DivinePurposeBuff].up ) and UnitLevel('player') == 85) and cooldown[classtable.Zealotry].ready then
         if not setSpell then setSpell = classtable.Zealotry end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and (( HolyPower == 3 or buff[classtable.DivinePurposeBuff].up ) and UnitLevel('player') <85) and cooldown[classtable.Zealotry].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Zealotry, 'Zealotry') and talents[classtable.Zealotry]) and (( HolyPower >= 3 or buff[classtable.DivinePurposeBuff].up ) and UnitLevel('player') <85) and cooldown[classtable.Zealotry].ready then
         if not setSpell then setSpell = classtable.Zealotry end
     end
     if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and (( buff[classtable.ZealotryBuff].up and not false ) or not (talents[classtable.Zealotry] and true or false)) and cooldown[classtable.AvengingWrath].ready then
@@ -238,7 +238,7 @@ function Retribution:cleave()
     if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (buff[classtable.TheArtofWarBuff].up) and cooldown[classtable.Exorcism].ready then
         if not setSpell then setSpell = classtable.Exorcism end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (targethealthPerc <= 20) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and ((MaxDps.tier and MaxDps.tier[13].count >= 2) and buff[classtable.ZealotryBuff].up and HolyPower <3) and cooldown[classtable.Judgement].ready then
