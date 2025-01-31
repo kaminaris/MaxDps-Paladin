@@ -96,30 +96,30 @@ end
 
 
 function Retribution:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.RetributionAura, 'RetributionAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.RetributionAura].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.RetributionAura end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.ConcentrationAura, 'ConcentrationAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.ConcentrationAura].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.ConcentrationAura end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderAura, 'CrusaderAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.CrusaderAura].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.CrusaderAura end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.DevotionAura end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.ResistanceAura, 'ResistanceAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.ResistanceAura].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.ResistanceAura end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.BlessingofKings end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.BlessingofMight end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (buff[classtable.SealBuff].remains <300) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.SealofTruth end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.RetributionAura, 'RetributionAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.RetributionAura].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.RetributionAura end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.ConcentrationAura, 'ConcentrationAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.ConcentrationAura].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.ConcentrationAura end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.CrusaderAura, 'CrusaderAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.CrusaderAura].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.CrusaderAura end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.DevotionAura end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.ResistanceAura, 'ResistanceAura')) and (not buff[classtable.AuraBuff].up and false and false) and cooldown[classtable.ResistanceAura].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.ResistanceAura end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.BlessingofKings end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.BlessingofMight end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (buff[classtable.SealBuff].remains <300) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (ManaPerc <90) and cooldown[classtable.DivinePlea].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DivinePlea end
     end
@@ -134,9 +134,9 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
         MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not buff[classtable.SealBuff].up or ( buff[classtable.SealofRighteousnessBuff].up and targets == 1 )) and cooldown[classtable.SealofTruth].ready then
-        if not setSpell then setSpell = classtable.SealofTruth end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not buff[classtable.SealBuff].up or ( buff[classtable.SealofRighteousnessBuff].up and targets == 1 )) and cooldown[classtable.SealofTruth].ready then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (not buff[classtable.JudgementsofthePureBuff].up) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
