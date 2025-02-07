@@ -264,7 +264,7 @@ function Retribution:callaction()
     if (targets >1) then
         Retribution:cleave()
     end
-    if (targets <1) then
+    if (targets <=1) then
         Retribution:single()
     end
 end
