@@ -117,9 +117,9 @@ function Retribution:precombat()
     --if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not buff[classtable.BlessingBuff].up and false and false) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
     --    if not setSpell then setSpell = classtable.BlessingofMight end
     --end
-    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (buff[classtable.SealBuff].remains <300) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
-    --    if not setSpell then setSpell = classtable.SealofTruth end
-    --end
+    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (buff[classtable.SealofTruth].remains <300) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.SealofTruth end
+    end
     if (MaxDps:CheckSpellUsable(classtable.DivinePlea, 'DivinePlea')) and (ManaPerc <90) and cooldown[classtable.DivinePlea].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DivinePlea end
     end
@@ -134,9 +134,9 @@ function Retribution:single()
     if (MaxDps:CheckSpellUsable(classtable.Rebuke, 'Rebuke')) and cooldown[classtable.Rebuke].ready then
         MaxDps:GlowCooldown(classtable.Rebuke, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
-    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not buff[classtable.SealBuff].up or ( buff[classtable.SealofRighteousnessBuff].up and targets == 1 )) and cooldown[classtable.SealofTruth].ready then
-    --    if not setSpell then setSpell = classtable.SealofTruth end
-    --end
+    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not buff[classtable.SealofTruth].up or ( buff[classtable.SealofRighteousnessBuff].up and targets == 1 )) and cooldown[classtable.SealofTruth].ready then
+        if not setSpell then setSpell = classtable.SealofTruth end
+    end
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and (not buff[classtable.JudgementsofthePureBuff].up) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
     end
@@ -264,7 +264,9 @@ function Retribution:callaction()
     if (targets >1) then
         Retribution:cleave()
     end
-    Retribution:single()
+    if (targets <1) then
+        Retribution:single()
+    end
 end
 function Paladin:Retribution()
     fd = MaxDps.FrameData
