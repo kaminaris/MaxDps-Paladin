@@ -24,3 +24,7 @@ Specialization\Retribution.lua
 Specialization\Cata\Protection.lua
 Specialization\Cata\Retribution.lua
 #@end-version-cata@
+
+#@version-classic@
+Specialization\Classic\Retribution.lua
+#@end-version-classic@

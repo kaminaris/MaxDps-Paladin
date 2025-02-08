@@ -26,7 +26,7 @@ function Paladin:Enable()
 		MaxDps.NextSpell = Paladin.Retribution
 		MaxDps:Print(MaxDps.Colors.Info .. 'Paladin Retribution', "info")
 	else
-		if MaxDps:IsCataWow() then
+		if MaxDps:IsCataWow() or MaxDps:IsClassicWow() then
 			MaxDps.NextSpell = Paladin.Retribution
 			MaxDps:Print(MaxDps.Colors.Info .. 'Paladin Retribution', "info")
 		end
