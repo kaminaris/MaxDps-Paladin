@@ -99,46 +99,34 @@ function Paladin:CLEU()
 end
 
 function Retribution:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.SealofCommand, 'SealofCommand')) and cooldown[classtable.SealofCommand].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.SealofCommand, 'SealofCommand')) and (not MaxDps:FindBuffAuraData ( 20154 ) .up and (not MaxDps:FindBuffAuraData ( 20920 ) .up or MaxDps:FindBuffAuraData ( 20920 ) .remains < 2)) and cooldown[classtable.SealofCommand].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SealofCommand end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SealofMartyrdom, 'SealofMartyrdom')) and cooldown[classtable.SealofMartyrdom].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.SealofMartyrdom end
+    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (not MaxDps:FindBuffAuraData ( 20920 ) .up and MaxDps:FindBuffAuraData ( 20154 ) .remains < 2) and cooldown[classtable.SealofRighteousness].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.SealofRighteousness end
     end
 end
 function Retribution:priorityList()
-    if (MaxDps:CheckSpellUsable(classtable.SealofMartyrdom, 'SealofMartyrdom')) and (180 >MaxDps.swingtimer.melee and MaxDps:FindBuffAuraData ( 20920 ) .up) and cooldown[classtable.SealofMartyrdom].ready then
-        if not setSpell then setSpell = classtable.SealofMartyrdom end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofCommand, 'SealofCommand')) and (180 >MaxDps.swingtimer.melee and MaxDps:FindBuffAuraData ( 407798 ) .up and not targethealthPerc == 20) and cooldown[classtable.SealofCommand].ready then
-        if not setSpell then setSpell = classtable.SealofCommand end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofMartyrdom, 'SealofMartyrdom')) and (not MaxDps:FindBuffAuraData ( 407798 ) .up and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and targethealthPerc == 20) and cooldown[classtable.SealofMartyrdom].ready then
-        if not setSpell then setSpell = classtable.SealofMartyrdom end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (MaxDps:CheckSpellUsable ( 24239 , "hammer_of_wrath" ) and targethealthPerc == 20) and cooldown[classtable.HammerofWrath].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and (targethealthPerc <= 20) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (cooldown[classtable.DivineStorm].ready and MaxDps.swingtimer.any >1.6 and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and MaxDps:FindBuffAuraData ( 407798 ) .up and MaxDps:FindBuffAuraData ( 407975 ) .count == 0) and cooldown[classtable.DivineStorm].ready then
-        if not setSpell then setSpell = classtable.DivineStorm end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.CrusaderStrike].ready and MaxDps.swingtimer.any >1.6 and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and MaxDps:FindBuffAuraData ( 407798 ) .up and MaxDps:FindBuffAuraData ( 407975 ) .count == 0) and cooldown[classtable.CrusaderStrike].ready then
-        if not setSpell then setSpell = classtable.CrusaderStrike end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofCommand, 'SealofCommand')) and (not MaxDps:FindBuffAuraData ( 20920 ) .up and not MaxDps:FindBuffAuraData ( 407798 ) .up and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and not targethealthPerc == 20) and cooldown[classtable.SealofCommand].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SealofCommand, 'SealofCommand')) and (not MaxDps:FindBuffAuraData ( 20154 ) .up and (not MaxDps:FindBuffAuraData ( 20920 ) .up or MaxDps:FindBuffAuraData ( 20920 ) .remains < 2)) and cooldown[classtable.SealofCommand].ready then
         if not setSpell then setSpell = classtable.SealofCommand end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (select(2,UnitCreatureType("target")) == 6) and (cooldown[classtable.Exorcism].ready and MaxDps.swingtimer.any >1.6 and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and MaxDps:FindBuffAuraData ( 20920 ) .up) and cooldown[classtable.Exorcism].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (not MaxDps:FindBuffAuraData ( 20920 ) .up and MaxDps:FindBuffAuraData ( 20154 ) .remains < 2) and cooldown[classtable.SealofRighteousness].ready then
+        if not setSpell then setSpell = classtable.SealofRighteousness end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (select(2,UnitCreatureType("target")) == 6) and cooldown[classtable.Exorcism].ready then
         if not setSpell then setSpell = classtable.Exorcism end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (cooldown[classtable.DivineStorm].ready and MaxDps.swingtimer.any >1.6 and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and MaxDps:FindBuffAuraData ( 20920 ) .up and MaxDps:FindBuffAuraData ( 407975 ) .count == 0) and cooldown[classtable.DivineStorm].ready then
-        if not setSpell then setSpell = classtable.DivineStorm end
+    if (MaxDps:CheckSpellUsable(classtable.HolyWrath, 'HolyWrath')) and (select(2,UnitCreatureType("target")) == 6) and cooldown[classtable.HolyWrath].ready then
+        if not setSpell then setSpell = classtable.HolyWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (cooldown[classtable.CrusaderStrike].ready and MaxDps.swingtimer.any >1.6 and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and MaxDps:FindBuffAuraData ( 20920 ) .up and MaxDps:FindBuffAuraData ( 407975 ) .count == 0) and cooldown[classtable.CrusaderStrike].ready then
-        if not setSpell then setSpell = classtable.CrusaderStrike end
+    if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and cooldown[classtable.Judgement].ready then
+        if not setSpell then setSpell = classtable.Judgement end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and (select(2,UnitCreatureType("target")) == 6) and (cooldown[classtable.Exorcism].ready and MaxDps.swingtimer.any >1.6 and ( GetSpellCooldown ( 61304 ) and GetSpellCooldown ( 61304 ) == 0 ) and cooldown[classtable.CrusaderStrike].remains >= MaxDps.swingtimer.any - 1.6 and cooldown[classtable.DivineStorm].remains >= MaxDps.swingtimer.any - 1.6 and MaxDps:FindBuffAuraData ( 407798 ) .up) and cooldown[classtable.Exorcism].ready then
-        if not setSpell then setSpell = classtable.Exorcism end
+    if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and (MaxDps:FindBuffAuraData ( 20049 ) .up) and cooldown[classtable.Consecration].ready then
+        if not setSpell then setSpell = classtable.Consecration end
     end
 end
 
@@ -182,11 +170,15 @@ function Paladin:Retribution()
     --end
 
     classtable.SealofCommand=20920
+    classtable.SealofRighteousness=20154
     classtable.SealofMartyrdom=407798
     classtable.HammerofWrath=24239
     classtable.DivineStorm=407778
     classtable.CrusaderStrike=407676
     classtable.Exorcism=415073
+    classtable.HolyWrath=2812
+    classtable.Judgement=20271
+    classtable.Consecration=26573
 
     local function debugg()
     end
