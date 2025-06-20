@@ -28,3 +28,7 @@ Specialization\Cata\Retribution.lua
 #@version-classic@
 Specialization\Classic\Retribution.lua
 #@end-version-classic@
+
+#@version-mists@
+Specialization\Mop\Retribution.lua
+#@end-version-mists@
