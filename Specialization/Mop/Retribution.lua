@@ -56,8 +56,6 @@ local maxHP
 local healthPerc
 local timeInCombat
 local className, classFilename, classId = UnitClass('player')
-local currentSpec = GetSpecialization()
-local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or 'None'
 local classtable
 local LibRangeCheck = LibStub('LibRangeCheck-3.0', true)
 
@@ -112,9 +110,6 @@ function Retribution:precombat()
     if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SealofTruth end
     end
-    if (MaxDps:CheckSpellUsable(classtable.GolembloodPotion, 'GolembloodPotion')) and cooldown[classtable.GolembloodPotion].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.GolembloodPotion end
-    end
 end
 
 
@@ -129,9 +124,6 @@ function Retribution:callaction()
     end
     if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (ManaPerc <= 30) and cooldown[classtable.SealofInsight].ready then
         if not setSpell then setSpell = classtable.SealofInsight end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.GolembloodPotion, 'GolembloodPotion')) and (MaxDps:Bloodlust(1) or ( buff[classtable.AncientPowerBuff].up and buff[classtable.AvengingWrathBuff].up ) or ttd <= 40) and cooldown[classtable.GolembloodPotion].ready then
-        if not setSpell then setSpell = classtable.GolembloodPotion end
     end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2 ) and ( HolyPower >= 3 )) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
