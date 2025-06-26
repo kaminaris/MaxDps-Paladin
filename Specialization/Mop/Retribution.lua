@@ -65,51 +65,28 @@ local ManaMax
 local ManaDeficit
 local HolyPowerDeficit
 local ManaPerc
+local seal
 
 local Retribution = {}
 
-
-
-local function hammer_of_light_free()
-	if buff[classtable.LightsDeliverance].count == 60 then
-		return true
-	else
-		return false
-	end
-end
-
-local function hammer_of_light_free_remains()
-    return buff[classtable.LightsDeliverance].count == 60 and buff[classtable.LightsDeliverance].up and buff[classtable.LightsDeliverance].remains or 0
-end
-
-local holy_power_generators_used = 0
-local hpg_used = 0
-local hpg_to_2dawn = 0
-function Paladin:CLEU()
-    local  _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, overEnergize, powerType = CombatLogGetCurrentEventInfo()
-    if sourceGUID ~= UnitGUID( 'player' ) then return end
-    if subtype == 'SPELL_ENERGIZE' and powerType == Enum.PowerType.HolyPower and ( amount + overEnergize ) > 0 then
-        local ability = classtable[ spellName ]
-        if ability and C_Spell.GetSpellName(ability) ~= 'Arcane Torrent' and C_Spell.GetSpellName(ability) ~= 'Divine Toll' then
-            holy_power_generators_used = ( holy_power_generators_used + 1 ) % 3
-            return
-        end
-    elseif spellID == 385127 and ( subtype == 'SPELL_AURA_APPLIED' or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' ) then
-        holy_power_generators_used = max( 0, holy_power_generators_used - 3 )
-        return
-    end
-end
+-- List of seal IDs
+local seals = {
+    [1] = "Seal of Righteousness", -- Stance ID for Seal of Righteousness
+    [2] = "Seal of Truth",         -- Stance ID for Seal of Truth
+    [3] = "Seal of Insight",       -- Stance ID for Seal of Insight
+    [4] = "Seal of Justice",       -- Stance ID for Seal of Justice
+ }
 
 function Retribution:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not aura.str_agi_int.up) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not buff[classtable.BlessingofKingsBuff].up) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.BlessingofKings end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not aura.mastery.up and not aura.str_agi_int.up) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.BlessingofMight, 'BlessingofMight')) and (not buff[classtable.BlessingofMightBuff].up and not buff[classtable.BlessingofKingsBuff].up) and cooldown[classtable.BlessingofMight].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.BlessingofMight end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.SealofTruth end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not seal == 2) and cooldown[classtable.SealofTruth].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
 end
 
 
@@ -119,12 +96,12 @@ local function ClearCDs()
 end
 
 function Retribution:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (ManaPerc >= 90 or seal.none) and cooldown[classtable.SealofTruth].ready then
-        if not setSpell then setSpell = classtable.SealofTruth end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (ManaPerc <= 30) and cooldown[classtable.SealofInsight].ready then
-        if not setSpell then setSpell = classtable.SealofInsight end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (ManaPerc >= 90 or (not seal == 2 or not seal == 3 )) and cooldown[classtable.SealofTruth].ready then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (ManaPerc <= 30) and cooldown[classtable.SealofInsight].ready then
+    --    if not setSpell then setSpell = classtable.SealofInsight end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2 ) and ( HolyPower >= 3 )) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
@@ -180,9 +157,8 @@ function Paladin:Retribution()
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
     ManaPerc = (Mana / ManaMax) * 100
-    classtable.TemplarSlash = 406647
-    classtable.TemplarStrike = 407480
-    classtable.FinalVerdictBuff = 383329
+    seal = GetShapeshiftForm()
+
     --for spellId in pairs(MaxDps.Flags) do
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
@@ -191,6 +167,10 @@ function Paladin:Retribution()
     local function debugg()
     end
 
+    classtable.BlessingofKingsBuff = 20217
+    classtable.BlessingofMightBuff = 19740
+    classtable.InquisitionBuff = 84963
+    classtable.AvengingWrathBuff = 31884
 
     --if MaxDps.db.global.debugMode then
     --   debugg()
