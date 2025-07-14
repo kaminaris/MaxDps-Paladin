@@ -65,6 +65,9 @@ function Protection:callaction()
     if (MaxDps:CheckSpellUsable(classtable.AvengerShield, 'AvengerShield')) and cooldown[classtable.AvengerShield].ready then
         if not setSpell then setSpell = classtable.AvengerShield end
     end
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and (targets > 1) and cooldown[classtable.HammeroftheRighteous].ready then
+        if not setSpell then setSpell = classtable.HammeroftheRighteous end
+    end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
         if not setSpell then setSpell = classtable.CrusaderStrike end
     end
@@ -106,6 +109,7 @@ function Paladin:Protection()
     HolyPower = UnitPower('player', HolyPowerPT)
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
+    classtable = MaxDps.SpellTable
 
     classtable.AvengerShield = 31935
     classtable.CrusaderStrike = 35395
