@@ -31,5 +31,6 @@ Specialization\Classic\Retribution.lua
 #@end-version-classic@
 
 #@version-mists@
+Specialization\Mop\Protection.lua
 Specialization\Mop\Retribution.lua
 #@end-version-mists@
