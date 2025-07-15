@@ -75,7 +75,7 @@ local seals = {
     [2] = "Seal of Truth",         -- Stance ID for Seal of Truth
     [3] = "Seal of Insight",       -- Stance ID for Seal of Insight
     [4] = "Seal of Justice",       -- Stance ID for Seal of Justice
-}
+ }
 
 local SEAL_TRUTH       = 1   -- GetShapeshiftForm() value
 local SEAL_RIGHTEOUS   = 2
@@ -99,7 +99,12 @@ local function ClearCDs()
 end
 
 function Retribution:CallActionSingle()
-
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (ManaPerc >= 90 or (not seal == 2 or not seal == 3 )) and cooldown[classtable.SealofTruth].ready then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (ManaPerc <= 30) and cooldown[classtable.SealofInsight].ready then
+    --    if not setSpell then setSpell = classtable.SealofInsight end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2 ) and ( HolyPower >= 3 )) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
@@ -130,7 +135,6 @@ function Retribution:CallActionSingle()
 end
 
 function Retribution:CallActionAoE()
-
     if MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')
        and ((not buff[classtable.InquisitionBuff].up
              or buff[classtable.InquisitionBuff].remains <= 2)
