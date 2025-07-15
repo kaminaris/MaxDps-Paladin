@@ -43,6 +43,8 @@ local HolyPower
 local HolyPowerMax
 local HolyPowerDeficit
 
+local seal
+
 local Protection = {}
 
 function Protection:precombat()
@@ -62,6 +64,9 @@ local function ClearCDs()
 end
 
 function Protection:callaction()
+    if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (seal ~=3) and cooldown[classtable.SealofInsight].ready then
+        if not setSpell then setSpell = classtable.SealofInsight end
+    end
     if (MaxDps:CheckSpellUsable(classtable.AvengerShield, 'AvengerShield')) and cooldown[classtable.AvengerShield].ready then
         if not setSpell then setSpell = classtable.AvengerShield end
     end
@@ -109,6 +114,9 @@ function Paladin:Protection()
     HolyPower = UnitPower('player', HolyPowerPT)
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
+
+    seal = GetShapeshiftForm()
+
     classtable = MaxDps.SpellTable
 
     classtable.AvengerShield = 31935
