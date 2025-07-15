@@ -135,46 +135,35 @@ function Retribution:CallActionSingle()
 end
 
 function Retribution:CallActionAoE()
-    if MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')
-       and ((not buff[classtable.InquisitionBuff].up
-             or buff[classtable.InquisitionBuff].remains <= 2)
-            and HolyPower >= 3)
-       and cooldown[classtable.Inquisition].ready then
+    if MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition') and ((not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2) and HolyPower >= 3) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')
-       and HolyPower == 5 and cooldown[classtable.DivineStorm].ready then
+    if MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm') and HolyPower == 5 and cooldown[classtable.DivineStorm].ready then
         if not setSpell then setSpell = classtable.DivineStorm end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')
-       and cooldown[classtable.HammerofWrath].ready then
+    if MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath') and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')
-       and cooldown[classtable.HammeroftheRighteous].ready then
+    if MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous') and cooldown[classtable.HammeroftheRighteous].ready then
         if not setSpell then setSpell = classtable.HammeroftheRighteous end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')
-       and cooldown[classtable.Judgment].ready then
+    if MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment') and cooldown[classtable.Judgment].ready then
         if not setSpell then setSpell = classtable.Judgment end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')
-       and cooldown[classtable.Exorcism].ready then
+    if MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism') and cooldown[classtable.Exorcism].ready then
         if not setSpell then setSpell = classtable.Exorcism end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')
-       and HolyPower >= 3 and cooldown[classtable.DivineStorm].ready then
+    if MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm') and HolyPower >= 3 and cooldown[classtable.DivineStorm].ready then
         if not setSpell then setSpell = classtable.DivineStorm end
     end
 
-    if MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')
-       and buff[classtable.InquisitionBuff].up then
+    if MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath') and buff[classtable.InquisitionBuff].up then
         MaxDps:GlowCooldown(classtable.AvengingWrath,cooldown[classtable.AvengingWrath].ready)
     end
 end
@@ -185,12 +174,15 @@ function Retribution:callaction()
             setSpell = classtable.SealofRighteousness
             return setSpell
         end
-        self:CallActionAoE()
     else
         if seal ~= SEAL_TRUTH and MaxDps:CheckSpellUsable(classtable.SealofTruth,'SealofTruth') and cooldown[classtable.SealofTruth].ready then
             setSpell = classtable.SealofTruth
             return setSpell
         end
+    end
+    if targets >= 2 then
+        self:CallActionAoE()
+    else
         self:CallActionSingle()
     end
 end
