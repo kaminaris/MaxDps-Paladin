@@ -96,9 +96,9 @@ local function ClearCDs()
 end
 
 function Retribution:single()
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not seal == 2) and cooldown[classtable.SealofTruth].ready then
-        if not setSpell then setSpell = classtable.SealofTruth end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (seal ~= 1) and cooldown[classtable.SealofTruth].ready then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2 ) and ( HolyPower >= 3 )) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
@@ -129,12 +129,12 @@ function Retribution:single()
 end
 
 function Retribution:aoe()
-    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (targets >= 4 and seal ~= 1) and cooldown[classtable.SealofRighteousness].ready then
-        if not setSpell then setSpell = classtable.SealofRighteousness end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (targets < 4 and seal ~= 2) and cooldown[classtable.SealofTruth].ready then
-        if not setSpell then setSpell = classtable.SealofTruth end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (targets >= 4 and seal ~= 2) and cooldown[classtable.SealofRighteousness].ready then
+    --    if not setSpell then setSpell = classtable.SealofRighteousness end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (targets < 4 and seal ~= 1) and cooldown[classtable.SealofTruth].ready then
+    --    if not setSpell then setSpell = classtable.SealofTruth end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and ((not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2) and (HolyPower >= 3)) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
@@ -159,6 +159,12 @@ function Retribution:aoe()
 end
 
 function Retribution:callaction()
+    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (targets >= 4 and seal ~= 2) and cooldown[classtable.SealofRighteousness].ready then
+        if not setSpell then setSpell = classtable.SealofRighteousness end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (targets < 4 and seal ~= 1) and cooldown[classtable.SealofTruth].ready then
+        if not setSpell then setSpell = classtable.SealofTruth end
+    end
     if targets > 1 then
         Retribution:aoe()
     end
