@@ -95,13 +95,10 @@ local function ClearCDs()
     MaxDps:GlowCooldown(classtable.AvengingWrath, false)
 end
 
-function Retribution:callaction()
-    --if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (ManaPerc >= 90 or (not seal == 2 or not seal == 3 )) and cooldown[classtable.SealofTruth].ready then
-    --    if not setSpell then setSpell = classtable.SealofTruth end
-    --end
-    --if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (ManaPerc <= 30) and cooldown[classtable.SealofInsight].ready then
-    --    if not setSpell then setSpell = classtable.SealofInsight end
-    --end
+function Retribution:single()
+    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (not seal == 2) and cooldown[classtable.SealofTruth].ready then
+        if not setSpell then setSpell = classtable.SealofTruth end
+    end
     if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and (( not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2 ) and ( HolyPower >= 3 )) and cooldown[classtable.Inquisition].ready then
         if not setSpell then setSpell = classtable.Inquisition end
     end
@@ -130,6 +127,44 @@ function Retribution:callaction()
         if not setSpell then setSpell = classtable.TemplarsVerdict end
     end
 end
+
+function Retribution:aoe()
+    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and (targets >= 4 and seal ~= 1) and cooldown[classtable.SealofRighteousness].ready then
+        if not setSpell then setSpell = classtable.SealofRighteousness end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SealofTruth, 'SealofTruth')) and (targets < 4 and seal ~= 2) and cooldown[classtable.SealofTruth].ready then
+        if not setSpell then setSpell = classtable.SealofTruth end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Inquisition, 'Inquisition')) and ((not buff[classtable.InquisitionBuff].up or buff[classtable.InquisitionBuff].remains <= 2) and (HolyPower >= 3)) and cooldown[classtable.Inquisition].ready then
+        if not setSpell then setSpell = classtable.Inquisition end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (HolyPower == 5 or (buff[classtable.AvengingWrathBuff].up and HolyPower >= 3)) and cooldown[classtable.DivineStorm].ready then
+        if not setSpell then setSpell = classtable.DivineStorm end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
+        if not setSpell then setSpell = classtable.HammerofWrath end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and (targets >= 4) and cooldown[classtable.HammeroftheRighteous].ready then
+        if not setSpell then setSpell = classtable.HammeroftheRighteous end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
+        if not setSpell then setSpell = classtable.Judgment end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and cooldown[classtable.Exorcism].ready then
+        if not setSpell then setSpell = classtable.Exorcism end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.DivineStorm, 'DivineStorm')) and (HolyPower >= 3) and cooldown[classtable.DivineStorm].ready then
+        if not setSpell then setSpell = classtable.DivineStorm end
+    end
+end
+
+function Retribution:callaction()
+    if targets > 1 then
+        Retribution:aoe()
+    end
+    Retribution:single()
+end
+
 function Paladin:Retribution()
     fd = MaxDps.FrameData
     ttd = (fd.timeToDie and fd.timeToDie) or 500
