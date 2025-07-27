@@ -111,6 +111,7 @@ function Paladin:Protection()
     debuff = fd.debuff
     talents = fd.talents
     targets = MaxDps:SmartAoe()
+    targethealthPerc = (targetHP >0 and targetmaxHP >0 and (targetHP / targetmaxHP) * 100) or 100
     HolyPower = UnitPower('player', HolyPowerPT)
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
