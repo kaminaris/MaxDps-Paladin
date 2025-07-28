@@ -42,6 +42,9 @@ local LibRangeCheck = LibStub('LibRangeCheck-3.0', true)
 local HolyPower
 local HolyPowerMax
 local HolyPowerDeficit
+local Mana
+local ManaMax
+local ManaDeficit
 
 local seal
 
@@ -111,7 +114,16 @@ function Paladin:Protection()
     debuff = fd.debuff
     talents = fd.talents
     targets = MaxDps:SmartAoe()
+    Mana = UnitPower('player', ManaPT)
+    ManaMax = UnitPowerMax('player', ManaPT)
+    ManaDeficit = ManaMax - Mana
+    targetHP = UnitHealth('target')
+    targetmaxHP = UnitHealthMax('target')
     targethealthPerc = (targetHP >0 and targetmaxHP >0 and (targetHP / targetmaxHP) * 100) or 100
+    curentHP = UnitHealth('player')
+    maxHP = UnitHealthMax('player')
+    healthPerc = (curentHP / maxHP) * 100
+    timeInCombat = MaxDps.combatTime or 0
     HolyPower = UnitPower('player', HolyPowerPT)
     HolyPowerMax = 5
     HolyPowerDeficit = HolyPowerMax - HolyPower
