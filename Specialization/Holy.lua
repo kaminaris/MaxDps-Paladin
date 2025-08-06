@@ -113,20 +113,20 @@ function Holy:precombat()
     if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and (not buff[classtable.PaladinAuraBuff].up) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DevotionAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BeaconofLight, 'BeaconofLight')) and (MaxDps:DebuffCounter(classtable.BeaconofLightDeBuff) == 0) and cooldown[classtable.BeaconofLight].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.BeaconofLight end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.BeaconofFaith, 'BeaconofFaith')) and (MaxDps:NumGroupFriends() >1 and MaxDps:DebuffCounter(classtable.BeaconofFaithDeBuff) == 0) and cooldown[classtable.BeaconofFaith].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.BeaconofFaith end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.BeaconofLight, 'BeaconofLight')) and (MaxDps:DebuffCounter(classtable.BeaconofLightDeBuff) == 0) and cooldown[classtable.BeaconofLight].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.BeaconofLight end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.BeaconofFaith, 'BeaconofFaith')) and (MaxDps:NumGroupFriends() >1 and MaxDps:DebuffCounter(classtable.BeaconofFaithDeBuff) == 0) and cooldown[classtable.BeaconofFaith].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.BeaconofFaith end
+    --end
 end
 function Holy:spenders()
-    if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (MaxDps:NumGroupFriends() <= 1 and (healthPerc <70 or not MaxDps:CheckEquipped('Shield')) and buff[classtable.ShiningRighteousnessReadyBuff].up or buff[classtable.EmpyreanLegacyBuff].up) and cooldown[classtable.WordofGlory].ready then
-        if not setSpell then setSpell = classtable.WordofGlory end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.LightofDawn, 'LightofDawn')) and (MaxDps:NumGroupFriends() >1 and buff[classtable.ShiningRighteousnessReadyBuff].up) and cooldown[classtable.LightofDawn].ready then
-        if not setSpell then setSpell = classtable.LightofDawn end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (MaxDps:NumGroupFriends() <= 1 and (healthPerc <70 or not MaxDps:CheckEquipped('Shield')) and buff[classtable.ShiningRighteousnessReadyBuff].up or buff[classtable.EmpyreanLegacyBuff].up) and cooldown[classtable.WordofGlory].ready then
+    --    if not setSpell then setSpell = classtable.WordofGlory end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.LightofDawn, 'LightofDawn')) and (MaxDps:NumGroupFriends() >1 and buff[classtable.ShiningRighteousnessReadyBuff].up) and cooldown[classtable.LightofDawn].ready then
+    --    if not setSpell then setSpell = classtable.LightofDawn end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.ShieldoftheRighteous, 'ShieldoftheRighteous')) and cooldown[classtable.ShieldoftheRighteous].ready then
         if not setSpell then setSpell = classtable.ShieldoftheRighteous end
     end
