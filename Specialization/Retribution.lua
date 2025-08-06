@@ -164,7 +164,7 @@ function Retribution:precombat()
     else
         trinket_2_sync = 0.5
     end
-    if not trinket_1_buffs and trinket_2_buffs or trinket_2_buffs and ((MaxDps:CheckTrinketCooldownDuration('14')%1)*(1.5 + MaxDps:HasBuffEffect('14', 'strength'))*(trinket_2_sync))>((MaxDps:CheckTrinketCooldownDuration('13')%1)*(1.5 + MaxDps:HasBuffEffect('13', 'strength'))*(trinket_1_sync)) then
+    if not trinket_1_buffs and trinket_2_buffs or trinket_2_buffs and ((MaxDps:CheckTrinketCooldownDuration('14')%1)*(1.5 + (MaxDps:HasBuffEffect('14', 'strength') and 1 or 0))*(trinket_2_sync))>((MaxDps:CheckTrinketCooldownDuration('13')%1)*(1.5 + (MaxDps:HasBuffEffect('13', 'strength') and 1 or 0))*(trinket_1_sync)) then
         trinket_priority = 2
     else
         trinket_priority = true
