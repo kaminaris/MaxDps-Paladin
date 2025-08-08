@@ -250,7 +250,7 @@ function Retribution:generators()
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and ((targets <2 or not talents[classtable.BlessedChampion]) and buff[classtable.BlessingofAnsheBuff].up) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarStrike, 'TemplarStrike')) and talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarStrike, 'TemplarStrike')) and (talents[classtable.TemplarStrikes]) and cooldown[classtable.TemplarStrike].ready then
         if not setSpell then setSpell = classtable.TemplarStrike end
     end
     if (MaxDps:CheckSpellUsable(classtable.Judgment, 'Judgment')) and cooldown[classtable.Judgment].ready then
@@ -262,10 +262,10 @@ function Retribution:generators()
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and ((targets <2 or not talents[classtable.BlessedChampion])) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
     end
-    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and talents[classtable.TemplarStrikes] and cooldown[classtable.TemplarSlash].ready then
+    if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (talents[classtable.TemplarStrikes]) and cooldown[classtable.TemplarSlash].ready then
         if not setSpell then setSpell = classtable.TemplarSlash end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (not talents[classtable.CrusaderStrikes]) and cooldown[classtable.CrusaderStrike].ready then
         if not setSpell then setSpell = classtable.CrusaderStrike end
     end
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
