@@ -379,13 +379,14 @@ function Paladin:Protection()
     HolyPowerTimeToMax = HolyPowerDeficit / HolyPowerRegen
     SpellHaste = UnitSpellHaste('player')
     SpellCrit = GetCritChance()
+    classtable.HolyArmament = GetSpellInfo(432459) and GetSpellInfo(432459).name and GetSpellInfo(GetSpellInfo(432459).name).spellID or 432459
+    classtable.HolyArmaments = classtable.HolyArmament
     next_armament = function()
         local firstSpell = GetSpellInfo(classtable.HolyArmaments)
         local spellinfo = firstSpell and GetSpellInfo(firstSpell.spellID)
         return spellinfo and spellinfo.spellID or 0
     end
     classtable.HammerofLight = 427453
-    classtable.HolyArmaments = 432459
     hpg_used = holy_power_generators_used
     classtable.BlessingofDawnBuff = 385127
     hpg_to_2dawn = max( -1, 6 - hpg_used - ( buff[classtable.BlessingofDawnBuff].count * 3 ) )
