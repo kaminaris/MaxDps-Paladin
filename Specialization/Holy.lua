@@ -237,7 +237,8 @@ function Paladin:Holy()
     HolyPowerTimeToMax = HolyPowerDeficit / HolyPowerRegen
     SpellHaste = UnitSpellHaste('player')
     SpellCrit = GetCritChance()
-    classtable.HolyArmaments = classtable.HolyBulwark
+    classtable.HolyArmament = GetSpellInfo(432459) and GetSpellInfo(432459).name and GetSpellInfo(GetSpellInfo(432459).name).spellID or 432459
+    classtable.HolyArmaments = classtable.HolyArmament
     classtable.BlessingofSummer = 388007
     classtable.BlessingofAutumn = 388010
     classtable.BlessingofWinter = 388011
