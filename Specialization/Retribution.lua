@@ -265,7 +265,7 @@ function Retribution:generators()
     if (MaxDps:CheckSpellUsable(classtable.TemplarSlash, 'TemplarSlash')) and (talents[classtable.TemplarStrikes]) and cooldown[classtable.TemplarSlash].ready then
         if not setSpell then setSpell = classtable.TemplarSlash end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (not talents[classtable.CrusaderStrikes]) and cooldown[classtable.CrusaderStrike].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (not talents[classtable.CrusadingStrikes] and not talents[classtable.TemplarStrikes]) and cooldown[classtable.CrusaderStrike].ready then
         if not setSpell then setSpell = classtable.CrusaderStrike end
     end
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
