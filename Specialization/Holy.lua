@@ -174,9 +174,9 @@ function Holy:callaction()
     if (MaxDps:CheckSpellUsable(classtable.HolyPrism, 'HolyPrism')) and cooldown[classtable.HolyPrism].ready then
         if not setSpell then setSpell = classtable.HolyPrism end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BeaconofVirtue, 'BeaconofVirtue')) and (MaxDps:NumGroupFriends() >1) and cooldown[classtable.BeaconofVirtue].ready then
-        if not setSpell then setSpell = classtable.BeaconofVirtue end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.BeaconofVirtue, 'BeaconofVirtue')) and (MaxDps:NumGroupFriends() >1) and cooldown[classtable.BeaconofVirtue].ready then
+    --    if not setSpell then setSpell = classtable.BeaconofVirtue end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (talents[classtable.AvengingCrusader] and cooldown[classtable.CrusaderStrike].fullRecharge <gcd) and cooldown[classtable.CrusaderStrike].ready then
         if not setSpell then setSpell = classtable.CrusaderStrike end
     end
