@@ -150,7 +150,7 @@ function Paladin:CLEU()
 end
 
 function Protection:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.DevotionAura, 'DevotionAura')) and not(buff[classtable.DevotionAuraBuff].up) and cooldown[classtable.DevotionAura].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DevotionAura end
     end
     if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready and not UnitAffectingCombat('player') then
@@ -182,25 +182,25 @@ function Protection:mitigation()
         if not setSpell then setSpell = classtable.ShieldoftheRighteous end
     end
     if (MaxDps:CheckSpellUsable(classtable.BlessingofSpellwarding, 'BlessingofSpellwarding')) and (false) and cooldown[classtable.BlessingofSpellwarding].ready then
-        if not setSpell then setSpell = classtable.BlessingofSpellwarding end
+        MaxDps:GlowCooldown(classtable.BlessingofSpellwarding, cooldown[classtable.BlessingofSpellwarding].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (healthPerc <wog_health and (HolyPowerDeficit == 0 or buff[classtable.DivinePurposeBuff].up or buff[classtable.ShiningLightFreeBuff].up)) and cooldown[classtable.WordofGlory].ready then
-        if not setSpell then setSpell = classtable.WordofGlory end
+        MaxDps:GlowCooldown(classtable.WordofGlory, cooldown[classtable.WordofGlory].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.DivineShield, 'DivineShield')) and ((talents[classtable.FinalStand] and true or false) and (UnitThreatSituation('player') == 2 or UnitThreatSituation('player') == 3) and MaxDps.incoming_damage_5 >ds_damage and not (buff[classtable.ArdentDefenderBuff].up or buff[classtable.GuardianofAncientKingsBuff].up or buff[classtable.DivineShieldBuff].up or buff[classtable.PotionBuff].up)) and cooldown[classtable.DivineShield].ready then
-        if not setSpell then setSpell = classtable.DivineShield end
+        MaxDps:GlowCooldown(classtable.DivineShield, cooldown[classtable.DivineShield].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.GuardianofAncientKings, 'GuardianofAncientKings')) and ((UnitThreatSituation('player') == 2 or UnitThreatSituation('player') == 3) and MaxDps.incoming_damage_5 >goak_damage and not (buff[classtable.ArdentDefenderBuff].up or buff[classtable.GuardianofAncientKingsBuff].up or buff[classtable.DivineShieldBuff].up or buff[classtable.PotionBuff].up)) and cooldown[classtable.GuardianofAncientKings].ready then
-        if not setSpell then setSpell = classtable.GuardianofAncientKings end
+        MaxDps:GlowCooldown(classtable.GuardianofAncientKings, cooldown[classtable.GuardianofAncientKings].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.Sentinel, 'Sentinel')) and (false and (UnitThreatSituation('player') == 2 or UnitThreatSituation('player') == 3) and MaxDps.incoming_damage_5 >goak_damage and not (buff[classtable.ArdentDefenderBuff].up or buff[classtable.GuardianofAncientKingsBuff].up or buff[classtable.DivineShieldBuff].up or buff[classtable.PotionBuff].up)) and cooldown[classtable.Sentinel].ready then
-        if not setSpell then setSpell = classtable.Sentinel end
+        MaxDps:GlowCooldown(classtable.Sentinel, cooldown[classtable.Sentinel].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.ArdentDefender, 'ArdentDefender')) and ((UnitThreatSituation('player') == 2 or UnitThreatSituation('player') == 3) and MaxDps.incoming_damage_5 >ad_damage and not (buff[classtable.ArdentDefenderBuff].up or buff[classtable.GuardianofAncientKingsBuff].up or buff[classtable.DivineShieldBuff].up or buff[classtable.PotionBuff].up)) and cooldown[classtable.ArdentDefender].ready then
-        if not setSpell then setSpell = classtable.ArdentDefender end
+        MaxDps:GlowCooldown(classtable.ArdentDefender, cooldown[classtable.ArdentDefender].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.LayOnHands, 'LayOnHands')) and (healthPerc <loh_health) and cooldown[classtable.LayOnHands].ready then
-        if not setSpell then setSpell = classtable.LayOnHands end
+        MaxDps:GlowCooldown(classtable.LayOnHands, cooldown[classtable.LayOnHands].ready)
     end
 end
 function Protection:standard()
@@ -234,10 +234,10 @@ function Protection:standard()
     if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and (not buff[classtable.BulwarkofRighteousFuryBuff].up and (talents[classtable.BulwarkofRighteousFury] and true or false) and targets >= 3) and cooldown[classtable.AvengersShield].ready then
         if not setSpell then setSpell = classtable.AvengersShield end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and (buff[classtable.BlessedAssuranceBuff].up and targets <3 and not buff[classtable.AvengingWrathBuff].up) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous') and talents[classtable.HammeroftheRighteous]) and (buff[classtable.BlessedAssuranceBuff].up and targets <3 and not buff[classtable.AvengingWrathBuff].up) and cooldown[classtable.HammeroftheRighteous].ready then
         if not setSpell then setSpell = classtable.HammeroftheRighteous end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and (buff[classtable.BlessedAssuranceBuff].up and targets <3 and not buff[classtable.AvengingWrathBuff].up) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer') and talents[classtable.BlessedHammer]) and (buff[classtable.BlessedAssuranceBuff].up and targets <3 and not buff[classtable.AvengingWrathBuff].up) and cooldown[classtable.BlessedHammer].ready then
         if not setSpell then setSpell = classtable.BlessedHammer end
     end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and (buff[classtable.BlessedAssuranceBuff].up and targets <2 and not buff[classtable.AvengingWrathBuff].up) and cooldown[classtable.CrusaderStrike].ready then
@@ -270,10 +270,10 @@ function Protection:standard()
     if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and (not buff[classtable.ShaketheHeavensBuff].up and (talents[classtable.ShaketheHeavens] and true or false)) and cooldown[classtable.AvengersShield].ready then
         if not setSpell then setSpell = classtable.AvengersShield end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and ((buff[classtable.BlessedAssuranceBuff].up and targets <3) or buff[classtable.ShaketheHeavensBuff].up) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous') and talents[classtable.HammeroftheRighteous]) and ((buff[classtable.BlessedAssuranceBuff].up and targets <3) or buff[classtable.ShaketheHeavensBuff].up) and cooldown[classtable.HammeroftheRighteous].ready then
         if not setSpell then setSpell = classtable.HammeroftheRighteous end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and ((buff[classtable.BlessedAssuranceBuff].up and targets <3) or buff[classtable.ShaketheHeavensBuff].up) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer') and talents[classtable.BlessedHammer]) and ((buff[classtable.BlessedAssuranceBuff].up and targets <3) or buff[classtable.ShaketheHeavensBuff].up) and cooldown[classtable.BlessedHammer].ready then
         if not setSpell then setSpell = classtable.BlessedHammer end
     end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and ((buff[classtable.BlessedAssuranceBuff].up and targets <2) or buff[classtable.ShaketheHeavensBuff].up) and cooldown[classtable.CrusaderStrike].ready then
@@ -291,17 +291,17 @@ function Protection:standard()
     if (MaxDps:CheckSpellUsable(classtable.HolyArmaments, 'HolyArmaments')) and (next_armament == classtable.HolyBulwark) and cooldown[classtable.HolyArmaments].ready then
         if not setSpell then setSpell = classtable.HolyArmaments end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer')) and cooldown[classtable.BlessedHammer].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BlessedHammer, 'BlessedHammer') and talents[classtable.BlessedHammer]) and cooldown[classtable.BlessedHammer].ready then
         if not setSpell then setSpell = classtable.BlessedHammer end
     end
-    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous')) and cooldown[classtable.HammeroftheRighteous].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HammeroftheRighteous, 'HammeroftheRighteous') and talents[classtable.HammeroftheRighteous]) and cooldown[classtable.HammeroftheRighteous].ready then
         if not setSpell then setSpell = classtable.HammeroftheRighteous end
     end
     if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
         if not setSpell then setSpell = classtable.CrusaderStrike end
     end
     if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (buff[classtable.ShiningLightFreeBuff].up and ((talents[classtable.BlessedAssurance] and true or false) or ((talents[classtable.LightsGuidance] and true or false) and cooldown[classtable.HammerfallIcd].remains == 0))) and cooldown[classtable.WordofGlory].ready then
-        if not setSpell then setSpell = classtable.WordofGlory end
+        MaxDps:GlowCooldown(classtable.WordofGlory, cooldown[classtable.WordofGlory].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.AvengersShield, 'AvengersShield')) and cooldown[classtable.AvengersShield].ready then
         if not setSpell then setSpell = classtable.AvengersShield end
@@ -310,7 +310,7 @@ function Protection:standard()
         MaxDps:GlowCooldown(classtable.EyeofTyr, cooldown[classtable.EyeofTyr].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.WordofGlory, 'WordofGlory')) and (buff[classtable.ShiningLightFreeBuff].up) and cooldown[classtable.WordofGlory].ready then
-        if not setSpell then setSpell = classtable.WordofGlory end
+        MaxDps:GlowCooldown(classtable.WordofGlory, cooldown[classtable.WordofGlory].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and cooldown[classtable.Consecration].ready then
         if not setSpell then setSpell = classtable.Consecration end
@@ -326,6 +326,13 @@ local function ClearCDs()
     MaxDps:GlowCooldown(classtable.MomentofGlory, false)
     MaxDps:GlowCooldown(classtable.DivineToll, false)
     MaxDps:GlowCooldown(classtable.BastionofLight, false)
+    MaxDps:GlowCooldown(classtable.BlessingofSpellwarding, false)
+    MaxDps:GlowCooldown(classtable.WordofGlory, false)
+    MaxDps:GlowCooldown(classtable.DivineShield, false)
+    MaxDps:GlowCooldown(classtable.GuardianofAncientKings, false)
+    MaxDps:GlowCooldown(classtable.Sentinel, false)
+    MaxDps:GlowCooldown(classtable.ArdentDefender, false)
+    MaxDps:GlowCooldown(classtable.LayOnHands, false)
     MaxDps:GlowCooldown(classtable.EyeofTyr, false)
     MaxDps:GlowCooldown(classtable.tome_of_lights_devotion, false)
     MaxDps:GlowCooldown(classtable.trinket1, false)
@@ -418,6 +425,7 @@ function Paladin:Protection()
     classtable.DivineGuidanceBuff = 460822
     classtable.SacredWeaponBuff = 432502
     classtable.InnerResilienceBuff = 0
+    classtable.DevotionAuraBuff = 465
     classtable.LayOnHands = 633
     classtable.HammerofLight = 427453
     classtable.HolyArmaments = 432459
