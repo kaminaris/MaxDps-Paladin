@@ -111,9 +111,9 @@ local Retribution = {}
 
 local trinket_1_buffs = false
 local trinket_2_buffs = false
-local trinket_1_sync = false
-local trinket_2_sync = false
-local trinket_priority = false
+local trinket_1_sync = 1
+local trinket_2_sync = 1
+local trinket_priority = 2
 local ds_castable = false
 local finished = false
 
@@ -164,17 +164,17 @@ function Retribution:precombat()
     else
         trinket_2_sync = 0.5
     end
-    if not trinket_1_buffs and trinket_2_buffs or trinket_2_buffs and ((MaxDps:CheckTrinketCooldownDuration('14')%1)*(1.5 + (MaxDps:HasBuffEffect('14', 'strength') and 1 or 0))*(trinket_2_sync))>((MaxDps:CheckTrinketCooldownDuration('13')%1)*(1.5 + (MaxDps:HasBuffEffect('13', 'strength') and 1 or 0))*(trinket_1_sync)) then
+    if not trinket_1_buffs and trinket_2_buffs or trinket_2_buffs and ((MaxDps:CheckTrinketCooldownDuration('14')%MaxDps:CheckTrinketBuffDuration('14', 'any'))*(1.5 + (MaxDps:HasBuffEffect('14', 'strength') and 1 or 0))*(trinket_2_sync))>((MaxDps:CheckTrinketCooldownDuration('13')%MaxDps:CheckTrinketBuffDuration('13', 'any'))*(1.5 + (MaxDps:HasBuffEffect('13', 'strength') and 1 or 0))*(trinket_1_sync)) then
         trinket_priority = 2
     else
-        trinket_priority = true
+        trinket_priority = 1
     end
 end
 function Retribution:cooldowns()
-    if (MaxDps:CheckSpellUsable(classtable.trinket1, 'trinket1')) and (((buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains >40 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count == 10) and not talents[classtable.RadiantGlory] or talents[classtable.RadiantGlory] and (not talents[classtable.ExecutionSentence] and cooldown[classtable.WakeofAshes].remains == 0 or debuff[classtable.ExecutionSentenceDeBuff].up)) and (not MaxDps:HasOnUseEffect('14') or MaxDps:CheckTrinketCooldown('14') or trinket_priority == 1) or 1 >= ttd and MaxDps:boss()) and cooldown[classtable.trinket1].ready then
+    if (MaxDps:CheckSpellUsable(classtable.trinket1, 'trinket1')) and (((buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains >40 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count == 10) and not talents[classtable.RadiantGlory] or talents[classtable.RadiantGlory] and (not talents[classtable.ExecutionSentence] and cooldown[classtable.WakeofAshes].remains == 0 or debuff[classtable.ExecutionSentenceDeBuff].up)) and (not MaxDps:HasOnUseEffect('14') or MaxDps:CheckTrinketCooldown('14') or trinket_priority == 1) or MaxDps:CheckTrinketBuffDuration('13', 'any') >= ttd and MaxDps:boss()) and cooldown[classtable.trinket1].ready then
         MaxDps:GlowCooldown(classtable.trinket1, cooldown[classtable.trinket1].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.trinket2, 'trinket2')) and (((buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains >40 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count == 10) and not talents[classtable.RadiantGlory] or talents[classtable.RadiantGlory] and (not talents[classtable.ExecutionSentence] and cooldown[classtable.WakeofAshes].remains == 0 or debuff[classtable.ExecutionSentenceDeBuff].up)) and (not MaxDps:HasOnUseEffect('13') or MaxDps:CheckTrinketCooldown('13') or trinket_priority == 2) or 1 >= ttd and MaxDps:boss()) and cooldown[classtable.trinket2].ready then
+    if (MaxDps:CheckSpellUsable(classtable.trinket2, 'trinket2')) and (((buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains >40 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count == 10) and not talents[classtable.RadiantGlory] or talents[classtable.RadiantGlory] and (not talents[classtable.ExecutionSentence] and cooldown[classtable.WakeofAshes].remains == 0 or debuff[classtable.ExecutionSentenceDeBuff].up)) and (not MaxDps:HasOnUseEffect('13') or MaxDps:CheckTrinketCooldown('13') or trinket_priority == 2) or MaxDps:CheckTrinketBuffDuration('14', 'any') >= ttd and MaxDps:boss()) and cooldown[classtable.trinket2].ready then
         MaxDps:GlowCooldown(classtable.trinket2, cooldown[classtable.trinket2].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.bestinslots, 'bestinslots')) and (((buff[classtable.AvengingWrathBuff].up and cooldown[classtable.AvengingWrath].remains >40 or buff[classtable.CrusadeBuff].up and buff[classtable.CrusadeBuff].count == 10) and not talents[classtable.RadiantGlory] or talents[classtable.RadiantGlory] and (not talents[classtable.ExecutionSentence] and cooldown[classtable.WakeofAshes].remains == 0 or debuff[classtable.ExecutionSentenceDeBuff].up))) and cooldown[classtable.bestinslots].ready then
