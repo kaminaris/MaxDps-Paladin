@@ -93,6 +93,7 @@ end
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.Rebuke, false)
     MaxDps:GlowCooldown(classtable.AvengingWrath, false)
+    MaxDps:GlowCooldown(classtable.ExecutionSentence, false)
 end
 
 function Retribution:single()
@@ -110,6 +111,9 @@ function Retribution:single()
     end
     if (MaxDps:CheckSpellUsable(classtable.TemplarsVerdict, 'TemplarsVerdict')) and (HolyPower == 5) and cooldown[classtable.TemplarsVerdict].ready then
         if not setSpell then setSpell = classtable.TemplarsVerdict end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.ExecutionSentence, 'ExecutionSentence')) and (buff[classtable.InquisitionBuff].up) and cooldown[classtable.ExecutionSentence].ready then
+        MaxDps:GlowCooldown(classtable.ExecutionSentence, cooldown[classtable.ExecutionSentence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
