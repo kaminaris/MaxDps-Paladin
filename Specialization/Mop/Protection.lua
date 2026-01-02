@@ -67,7 +67,7 @@ local function ClearCDs()
 end
 
 function Protection:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (seal ~=3) and cooldown[classtable.SealofInsight].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (not MaxDps:FindBuffAuraData(classtable.SealofInsight).up) and cooldown[classtable.SealofInsight].ready then
         if not setSpell then setSpell = classtable.SealofInsight end
     end
     if (MaxDps:CheckSpellUsable(classtable.AvengerShield, 'AvengerShield')) and cooldown[classtable.AvengerShield].ready then
