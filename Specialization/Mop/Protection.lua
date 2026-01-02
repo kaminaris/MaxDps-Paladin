@@ -50,6 +50,22 @@ local seal
 
 local Protection = {}
 
+local function SealofInsightActive()
+    local num = GetNumShapeshiftForms()
+    if not num or num == 0 then
+        return false
+    end
+
+    for i = 1, num do
+        local _, _, active, _, spellID = GetShapeshiftFormInfo(i)
+        if active and spellID == classtable.SealofInsight then
+            return true
+        end
+    end
+
+    return false
+end
+
 function Protection:precombat()
     if (MaxDps:CheckSpellUsable(classtable.BlessingofKings, 'BlessingofKings')) and (not buff[classtable.BlessingofKingsBuff].up) and cooldown[classtable.BlessingofKings].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.BlessingofKings end
@@ -67,7 +83,7 @@ local function ClearCDs()
 end
 
 function Protection:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (not MaxDps:FindBuffAuraData(classtable.SealofInsight).up) and cooldown[classtable.SealofInsight].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SealofInsight, 'SealofInsight')) and (not SealofInsightActive()) and cooldown[classtable.SealofInsight].ready then
         if not setSpell then setSpell = classtable.SealofInsight end
     end
     if (MaxDps:CheckSpellUsable(classtable.AvengerShield, 'AvengerShield')) and cooldown[classtable.AvengerShield].ready then
@@ -144,6 +160,7 @@ function Paladin:Protection()
     classtable.BlessingofKingsBuff = 20217
     classtable.BlessingofMightBuff = 19740
     classtable.EternalFlameBuff = 114163
+    classtable.SealofInsight = 20165
 
     setSpell = nil
     ClearCDs()
