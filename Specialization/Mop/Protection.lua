@@ -57,7 +57,7 @@ local function SealofInsightActive()
     end
 
     for i = 1, num do
-        local _, _, active, _, spellID = GetShapeshiftFormInfo(i)
+        local _, active, _, spellID = GetShapeshiftFormInfo(i)
         if active and spellID == classtable.SealofInsight then
             return true
         end
