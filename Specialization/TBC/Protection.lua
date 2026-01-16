@@ -164,6 +164,17 @@ function Paladin:Protection()
     HolyPowerDeficit = HolyPowerMax - HolyPower
     ManaPerc = (Mana / ManaMax) * 100
 
+    classtable.AvengersShield = 31987
+    classtable.HolyShield = 20925
+    classtable.Judgement = 20271
+    classtable.Consecration = 26573
+    classtable.SealofRighteousness = 20154
+    classtable.SealoftheCrusader = 21082
+    classtable.SealofWisdom = 20165
+    classtable.BlessingofSanctuary = 20911
+    classtable.AvengingWrath = 31884
+    classtable.HolyShield = 20925
+
     setSpell = nil
     ClearCDs()
 

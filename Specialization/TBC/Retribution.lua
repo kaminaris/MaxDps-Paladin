@@ -145,6 +145,15 @@ function Paladin:Retribution()
     HolyPowerDeficit = HolyPowerMax - HolyPower
     ManaPerc = (Mana / ManaMax) * 100
 
+    classtable.AvengingWrath = 31884
+    classtable.SealoftheCrusader = 21082
+    classtable.SealofBlood = 31801
+    classtable.CrusaderStrike = 35395
+    classtable.HammerofWrath = 24275
+    classtable.Judgement = 20271
+    classtable.Consecration = 26573
+    classtable.Exorcism = 879
+
     setSpell = nil
     ClearCDs()
 
