@@ -64,63 +64,53 @@ local ManaDeficit
 local HolyPowerDeficit
 local ManaPerc
 
-local Retribution = {}
+local Holy = {}
 
 local function ClearCDs()
-    MaxDps:GlowCooldown(classtable.AvengingWrath, false)
-    MaxDps:GlowCooldown(classtable.SealoftheCrusader, false)
-    MaxDps:GlowCooldown(classtable.SealofBlood, false)
+    MaxDps:GlowCooldown(classtable.SealofRighteousness, false)
 end
 
-function Retribution:AoE()
+function Holy:AoE()
 end
 
-function Retribution:single()
-    if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
-        --if not setSpell then setSpell = classtable.AvengingWrath end
-        MaxDps:GlowCooldown(classtable.AvengingWrath, true)
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealoftheCrusader, 'SealoftheCrusader')) and MaxDps:FindBuffAuraData(classtable.SealoftheCrusader).refreshable and cooldown[classtable.SealoftheCrusader].ready then
-        --if not setSpell then setSpell = classtable.SealoftheCrusader end
-        MaxDps:GlowCooldown(classtable.SealoftheCrusader, true)
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SealofBlood, 'SealofBlood')) and MaxDps:FindBuffAuraData(classtable.SealofBlood).refreshable and cooldown[classtable.SealofBlood].ready then
-        --if not setSpell then setSpell = classtable.SealofBlood end
-        MaxDps:GlowCooldown(classtable.SealofBlood, true)
-    end
-    if (MaxDps:CheckSpellUsable(classtable.CrusaderStrike, 'CrusaderStrike')) and cooldown[classtable.CrusaderStrike].ready then
-        if not setSpell then setSpell = classtable.CrusaderStrike end
-        --MaxDps:GlowCooldown(classtable.CrusaderStrike, 'CrusaderStrike')
+function Holy:single()
+    --if (MaxDps:CheckSpellUsable(classtable.AvengingWrath, 'AvengingWrath')) and cooldown[classtable.AvengingWrath].ready then
+    --    --if not setSpell then setSpell = classtable.AvengingWrath end
+    --    MaxDps:GlowCooldown(classtable.AvengingWrath, true)
+    --end
+    if (MaxDps:CheckSpellUsable(classtable.SealofRighteousness, 'SealofRighteousness')) and MaxDps:FindBuffAuraData(classtable.SealofRighteousness).refreshable and cooldown[classtable.SealofRighteousness].ready then
+        --if not setSpell then setSpell = classtable.SealofRighteousness end
+        MaxDps:GlowCooldown(classtable.SealofRighteousness, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.HammerofWrath, 'HammerofWrath')) and targethealthPerc <= 20 and cooldown[classtable.HammerofWrath].ready then
         if not setSpell then setSpell = classtable.HammerofWrath end
-        --MaxDps:GlowCooldown(classtable.HammerofWrath, 'HammerofWrath')
+        --MaxDps:GlowCooldown(classtable.HammerofWrath, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.Judgement, 'Judgement')) and cooldown[classtable.Judgement].ready then
         if not setSpell then setSpell = classtable.Judgement end
-        --MaxDps:GlowCooldown(classtable.Judgement, 'Judgement')
+        --MaxDps:GlowCooldown(classtable.Judgement, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.Consecration, 'Consecration')) and targets > 5 and cooldown[classtable.Consecration].ready then
         if not setSpell then setSpell = classtable.Consecration end
-        --MaxDps:GlowCooldown(classtable.Consecration, 'Consecration')
+        --MaxDps:GlowCooldown(classtable.Consecration, true)
     end
-    --if (MaxDps:CheckSpellUsable(classtable.Exorcism, 'Exorcism')) and cooldown[classtable.Exorcism].ready then
-    --    if not setSpell then setSpell = classtable.Exorcism end
-    --    --MaxDps:GlowCooldown(classtable.Exorcism, 'Exorcism')
-    --end
+    if (MaxDps:CheckSpellUsable(classtable.HolyShock, 'HolyShock')) and cooldown[classtable.HolyShock].ready then
+        if not setSpell then setSpell = classtable.HolyShock end
+        --MaxDps:GlowCooldown(classtable.HolyShock, true)
+    end
 end
 
-function Retribution:callaction()
+function Holy:callaction()
     --if (targets >1) then
     --    Retribution:AoE()
     --end
     --if (targets <=1) then
     --    Retribution:single()
     --end
-    Retribution:single()
+    Holy:single()
 end
 
-function Paladin:Retribution()
+function Paladin:Holy()
     fd = MaxDps.FrameData
     ttd = (fd.timeToDie and fd.timeToDie) or 500
     timeShift = fd.timeShift
@@ -149,17 +139,15 @@ function Paladin:Retribution()
     ManaPerc = (Mana / ManaMax) * 100
 
     classtable.AvengingWrath = 31884
-    classtable.SealoftheCrusader = 21082
-    classtable.SealofBlood = 31801
-    classtable.CrusaderStrike = 35395
-    classtable.HammerofWrath = 24275
+    classtable.SealofRighteousness = 21084
     classtable.Judgement = 20271
     classtable.Consecration = 26573
-    classtable.Exorcism = 879
+    classtable.HolyShock = 20473
+    classtable.HammerofWrath = 24275
 
     setSpell = nil
     ClearCDs()
 
-    Retribution:callaction()
+    Holy:callaction()
     if setSpell then return setSpell end
 end

@@ -27,6 +27,7 @@ Specialization\Cata\Retribution.lua
 #@end-version-cata@
 
 #@version-bcc@
+Specialization\TBC\Holy.lua
 Specialization\TBC\Protection.lua
 Specialization\TBC\Retribution.lua
 #@end-version-bcc@
