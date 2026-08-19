@@ -60,6 +60,7 @@ local classtable
 local LibRangeCheck = LibStub('LibRangeCheck-3.0', true)
 
 local HolyPower
+local HolyPowerMax
 local Mana
 local ManaMax
 local ManaDeficit
