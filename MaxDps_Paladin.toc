@@ -33,6 +33,7 @@ Specialization\TBC\Retribution.lua
 #@end-version-bcc@
 
 #@version-classic@
+Specialization\Holy.lua
 Specialization\Classic\Retribution.lua
 #@end-version-classic@
 
