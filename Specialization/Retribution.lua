@@ -5,10 +5,9 @@ if not MaxDps then return end
 
 local GetItemCooldown = C_Item.GetItemCooldown
 local usedTrinkets = {}
+local aurasSetup = true
 
 local Retribution = {}
-
-local aurasSetup = true
 
 function Paladin:Retribution()
     local _, class = UnitClass("player")
