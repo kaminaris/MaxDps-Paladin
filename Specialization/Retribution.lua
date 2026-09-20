@@ -8,6 +8,8 @@ local usedTrinkets = {}
 
 local Retribution = {}
 
+local aurasSetup = true
+
 function Paladin:Retribution()
     local _, class = UnitClass("player")
     local currentSpec = GetSpecialization()
@@ -48,6 +50,13 @@ function Paladin:Retribution()
                 end
             end
         end
+    end
+    if MaxDpsOptions.global.enableNewAuraSystem and MaxDps.SetupAuraContainer and aurasSetup then
+        MaxDps:SetupAuraContainer({
+            [53385] = true, -- Divine Storm
+            [427453] = true, -- Hammer of Light
+        }, {[1306161] = true})
+        aurasSetup = false
     end
     for itemID, spellID in pairs(usedTrinkets) do
         local itemID1 = GetInventoryItemID("player", 13)
