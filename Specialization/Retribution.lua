@@ -54,10 +54,13 @@ function Paladin:Retribution()
         -- 12.1 4pc tier
         MaxDps:SetupAuraContainer({
             [53385] = true, -- Divine Storm
+            [427453] = true, -- Hammer of Light
+        }, {[1306161] = true}) -- Divine Arbiter
+        MaxDps:SetupAuraContainer({
             [85256] = true, -- Templar's Verdict
             [383328] = true, -- Final Verdict
             [427453] = true, -- Hammer of Light
-        }, {[1306161] = true, [1306162] = true}) -- Divine Arbiter
+        }, {[1306162] = true}) -- Divine Arbiter
         aurasSetup = false
     end
     for itemID, spellID in pairs(usedTrinkets) do
