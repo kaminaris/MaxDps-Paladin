@@ -1,4 +1,4 @@
-## Title: MaxDps_Paladin
+﻿## Title: MaxDps_Paladin
 ## Version: @project-version@
 ## Author: Kaminaris
 ## Interface: 120105
@@ -16,30 +16,24 @@
 ## X-Wago-ID: 5NReYJG3
 
 Main.lua
-#@retail@
-Specialization\Holy.lua
-Specialization\Protection.lua
-Specialization\Retribution.lua
-#@end-retail@
+Specialization\Holy.lua [AllowLoadGameType standard]
+Specialization\Protection.lua [AllowLoadGameType standard]
+Specialization\Retribution.lua [AllowLoadGameType standard]
 
-#@version-cata@
-Specialization\Cata\Protection.lua
-Specialization\Cata\Retribution.lua
-#@end-version-cata@
+Specialization\Cata\Protection.lua [AllowLoadGameType cata]
+Specialization\Cata\Retribution.lua [AllowLoadGameType cata]
 
-#@version-bcc@
-Specialization\TBC\Holy.lua
-Specialization\TBC\Protection.lua
-Specialization\TBC\Retribution.lua
-#@end-version-bcc@
+Specialization\TBC\Holy.lua [AllowLoadGameType tbc]
+Specialization\TBC\Protection.lua [AllowLoadGameType tbc]
+Specialization\TBC\Retribution.lua [AllowLoadGameType tbc]
 
-#@version-classic@
-Specialization\Holy.lua
-Specialization\Classic\Retribution.lua
-#@end-version-classic@
+Specialization\Classic\Holy.lua [AllowLoadGameType vanilla]
+Specialization\Classic\Retribution.lua [AllowLoadGameType vanilla]
 
-#@version-mists@
-Specialization\Mop\Holy.lua
-Specialization\Mop\Protection.lua
-Specialization\Mop\Retribution.lua
-#@end-version-mists@
+Specialization\Mop\Holy.lua [AllowLoadGameType mists]
+Specialization\Mop\Protection.lua [AllowLoadGameType mists]
+Specialization\Mop\Retribution.lua [AllowLoadGameType mists]
+
+Specialization\Forever\Holy.lua [AllowLoadGameType forever]
+Specialization\Forever\Protection.lua [AllowLoadGameType forever]
+Specialization\Forever\Retribution.lua [AllowLoadGameType forever]
