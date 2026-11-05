@@ -7,7 +7,8 @@ local Holy = {}
 
 function Paladin:Holy()
     if MaxDps:SmartAoe() <= 1 then
-        if not MaxDps.IsSpellOnCooldown(20271, true) then return 20271 end --  Judgement
+        if not C_Spell.IsSpellUsable(20271) then return 21084 end --  Seal of Righteousness
+        if C_Spell.IsSpellUsable(20271) and not MaxDps.IsSpellOnCooldown(20271, true) then return 20271 end --  Judgement
         if not MaxDps.IsSpellOnCooldown(679, true) then return 679 end --  Holy Strike
         if not MaxDps.IsSpellOnCooldown(879, true) then return 879 end --  Exorcism
         if not MaxDps.IsSpellOnCooldown(1311606, true) then return 1311606 end --  Holy Shock
